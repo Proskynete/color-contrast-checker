@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useState } from "react";
+import { PropsWithChildren, createContext, useEffect, useState } from "react";
 import { CONSTANTS } from "../config/constants";
 import { transformHexToRgb } from "../helpers/transform";
 import { verifyLuminance } from "../helpers/verify-luminance";
@@ -29,6 +29,10 @@ export const ContrastProvider = ({
 }: PropsWithChildren<ContrastProviderProps>) => {
   const [state, setState] = useState(values);
   const [contrast, setContrast] = useState(0);
+
+  useEffect(() => {
+    setValuesHandler(values);
+  }, [values]);
 
   const setValuesHandler = (values: Hex) => {
     const textColorRGB = transformHexToRgb(values[CONSTANTS.ID.TEXT]);
