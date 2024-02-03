@@ -3,7 +3,7 @@ import "./assets/styles/components.css";
 import "./assets/styles/utilities.css";
 
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import { App } from "./views/app.tsx";
 import { ContrastProvider, defaultContrast } from "./contexts/contrast.tsx";
 
 const root = document.getElementById("root") as HTMLElement;
