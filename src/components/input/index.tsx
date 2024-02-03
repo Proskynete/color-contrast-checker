@@ -1,6 +1,7 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useContrast } from "../../hooks/useContrast";
 import { CONSTANTS } from "../../config/constants";
+import { HexColorPicker } from "react-colorful";
 
 interface ColorInputProps {
   label: string;
@@ -15,6 +16,9 @@ const ColorInput = ({
 }: ColorInputProps) => {
   const [hex, setHex] = useState(defaultValue);
   const { values, setValues } = useContrast();
+  const [show, setShow] = useState(false);
+  const boxElementRef = useRef<HTMLDivElement>(null);
+  const colorBoxElementRef = useRef<HTMLDivElement>(null);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -24,6 +28,20 @@ const ColorInput = ({
       setValues && setValues({ ...values, [id]: value });
     }
   };
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        boxElementRef.current?.contains(e.target as Node) ||
+        colorBoxElementRef.current?.contains(e.target as Node)
+      )
+        return;
+      setShow(false);
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
     <div className="relative flex flex-col gap-2">
@@ -49,9 +67,28 @@ const ColorInput = ({
         />
 
         <div
-          className="absolute top-1 right-1 border rounded-lg w-8 h-8 pointer"
+          className="absolute top-1 right-1 border rounded-lg w-8 h-8 cursor-pointer"
           style={{ backgroundColor: `#${hex}` }}
+          ref={boxElementRef}
+          onClick={() => setShow(!show)}
         />
+
+        {show && (
+          <div
+            ref={colorBoxElementRef}
+            className="w-72 absolute p-4 bg-white border rounded-lg shadow-lg z-10 -right-32"
+          >
+            <HexColorPicker
+              color={hex}
+              className="!w-auto"
+              onChange={(color) => {
+                setHex(color.split("#")[1]);
+                setValues &&
+                  setValues({ ...values, [id]: color.split("#")[1] });
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
