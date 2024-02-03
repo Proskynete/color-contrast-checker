@@ -1,8 +1,8 @@
 const Footer = () => {
   return (
     <footer className="bg-gray-800 text-white px-10">
-      <div className="my-8 flex flex-col">
-        <div className="w-full flex flex-row justify-end">
+      <div className="my-4 md:my-8 flex flex-col">
+        <div className="w-full flex flex-row justify-center md:justify-end">
           <div className=" flex space-x-2 text-sm">
             <pre className="text-xs">
               &gt; $ cd ~/

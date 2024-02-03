@@ -33,10 +33,10 @@ const ResultSection = () => {
   }, [result]);
 
   return (
-    <section className="w-full lg:w-2/3 mx-auto">
+    <section className="w-full lg:w-3/4 mx-auto">
       <div className="w-full flex flex-col lg:flex-row gap-0.5">
         <div
-          className={`w-2/3 flex flex-col content-center justify-center p-4 rounded-l-xl ${
+          className={`w-full lg:w-2/3 flex flex-col justify-center text-center md:text-left p-4 rounded-xl lg:rounded-l-xl lg:rounded-r-none ${
             contrastColors[
               textToShow({
                 largeText: state.largeText!,
@@ -63,9 +63,11 @@ const ResultSection = () => {
           </p>
         </div>
 
-        <div className="w-1/3 flex flex-col gap-0.5">
+        <div className="w-full lg:w-1/3 flex flex-col gap-0.5">
           <div
-            className={`p-4 ${contrastColors[state.largeText!]} rounded-tr-xl`}
+            className={`p-4 ${
+              contrastColors[state.largeText!]
+            } rounded-xl lg:rounded-tr-xl lg:rounded-l-none lg:rounded-br-none`}
           >
             <div className="text-xs flex justify-between">
               <h2 className="font-bold">Small Text</h2>
@@ -74,7 +76,9 @@ const ResultSection = () => {
           </div>
 
           <div
-            className={`p-4 ${contrastColors[state.smallText!]} rounded-br-xl`}
+            className={`p-4 ${
+              contrastColors[state.smallText!]
+            } rounded-xl lg:rounded-br-xl lg:rounded-l-none lg:rounded-tr-none`}
           >
             <div className="text-xs flex justify-between">
               <h2 className="font-bold">Large Text</h2>

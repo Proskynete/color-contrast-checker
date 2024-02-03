@@ -76,7 +76,7 @@ const ColorInput = ({
         {show && (
           <div
             ref={colorBoxElementRef}
-            className="w-72 absolute p-4 bg-white border rounded-lg shadow-lg z-10 -right-32"
+            className="w-72 absolute p-4 bg-white border rounded-lg shadow-lg z-10 right-0 lg:-right-32"
           >
             <HexColorPicker
               color={hex}
