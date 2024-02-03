@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import { Contrast, textToShow } from "../../../helpers/texts";
 import { StarMakerSection } from "../../../components/stars";
 import { evaluateResult } from "../../../helpers/contrast-checker";
+import { contrastColors, textSizes } from "../../../config/constants";
 
-interface State {
+export interface ResultSectionState {
   smallText?: Contrast;
   largeText?: Contrast;
 }
 
-const defaultState: State = {
+const defaultState: ResultSectionState = {
   smallText: "good",
   largeText: "good",
 };
@@ -21,12 +22,6 @@ const ResultSection = () => {
     largeText: state.largeText!,
     smallText: state.smallText!,
   });
-
-  const contrastColors = {
-    good: "bg-green-600/30 text-green-900",
-    warning: "bg-yellow-600/30 text-yellow-900",
-    error: "bg-red-600/30 text-red-900",
-  };
 
   useEffect(() => {
     if (result) {
@@ -49,27 +44,22 @@ const ResultSection = () => {
         </div>
 
         <div className="w-full lg:w-1/3 flex flex-col gap-0.5">
-          <div
-            className={`p-4 ${
-              contrastColors[state.smallText!]
-            } rounded-xl lg:rounded-tr-xl lg:rounded-l-none lg:rounded-br-none`}
-          >
-            <div className="text-xs flex justify-between">
-              <h2 className="font-bold">Small Text</h2>
-              <StarMakerSection assessment={state.smallText!} />
-            </div>
-          </div>
+          {/* how to improve textSizes array transform to generic array of objects */}
 
-          <div
-            className={`p-4 ${
-              contrastColors[state.largeText!]
-            } rounded-xl lg:rounded-br-xl lg:rounded-l-none lg:rounded-tr-none`}
-          >
-            <div className="text-xs flex justify-between">
-              <h2 className="font-bold">Large Text</h2>
-              <StarMakerSection assessment={state.largeText!} />
+          {textSizes.map((ele) => (
+            <div
+              className={`p-4 ${
+                contrastColors[state[ele.assessment] as Contrast]
+              } ${ele.customStyles}`}
+            >
+              <div className="text-xs flex justify-between">
+                <h2 className="font-bold">{ele.title}</h2>
+                <StarMakerSection
+                  assessment={state[ele.assessment] as Contrast}
+                />
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
