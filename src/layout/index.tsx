@@ -4,13 +4,11 @@ import { Header } from "./components/header";
 
 const PrincipalLayout = ({ children }: PropsWithChildren) => {
   return (
-    <div className="w-screen h-screen flex flex-col justify-between">
+    <div className="w-screen h-screen grid grid-rows-[auto,1fr,auto]">
       <Header />
-
-      <main className="w-2/3 lg:w-4/5 max-w-4xl mx-auto flex flex-col gap-5">
+      <main className="w-2/3 lg:w-4/5 max-w-4xl mx-auto flex flex-col gap-2 mt-20">
         {children}
       </main>
-
       <Footer />
     </div>
   );
