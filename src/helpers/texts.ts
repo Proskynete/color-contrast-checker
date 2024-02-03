@@ -4,6 +4,7 @@ interface TextMapping {
   [key: string]: {
     title: string;
     description: string;
+    suggestion?: string[];
     label: Contrast;
   };
 }
@@ -11,51 +12,72 @@ interface TextMapping {
 export const textMapping: TextMapping = {
   good_good: {
     title: "🤩 Excellent",
-    description: "This color combination is accessible to all users",
+    description:
+      "Colors accomplish optimal contrast ratio (AAA) at all text sizes",
     label: "good",
   },
   warning_good: {
     title: "Good 🥳",
-    description: "Good contrast for all text sizes, but it could be better",
+    description:
+      "Colors accomplish the optimal contrast ratio (AAA) only in texts below 18pt",
+    suggestion: ["You can still improve the contrast of text above 18pt."],
     label: "good",
   },
   good_warning: {
     title: "Good 🥳",
-    description: "Good contrast for all text sizes, but it could be better",
+    description:
+      "The colors accomplish the optimal contrast ratio (AAA) only in texts above 18pt",
+    suggestion: ["You can still improve the contrast of text below 18pt."],
     label: "good",
-  },
-  error_good: {
-    title: "Fair 😕",
-    description: "",
-    label: "warning",
   },
   warning_warning: {
     title: "Fair 😕",
     description:
-      "Fair contrast for all text sizes. It is accessible, but it could be better",
+      "Colors accomplish the minimum contrast ratio (AA) at all text sizes",
+    suggestion: [
+      "You can still enhance the contrast to accomplish the optimal contrast ratio (AAA).",
+    ],
+    label: "warning",
+  },
+  error_good: {
+    title: "Fair 😕",
+    description:
+      "Colors only have an optimal contrast ratio (AAA) in texts below 18pt",
+    suggestion: ["You need to improve contrast for text above 18pt."],
     label: "warning",
   },
   good_error: {
     title: "Fair 😕",
-    description: "",
+    description:
+      "Colors only have an optimal contrast ratio (AAA) in texts above 18pt",
+    suggestion: ["You need to improve the contrast for texts below 18pt."],
     label: "warning",
   },
   error_warning: {
     title: "Poor 😞",
     description:
-      "Poor contrast for small text sizes and normal contrast for large text sizes.",
+      "Colors only have a minimum contrast ratio (AA) in texts below 18pt",
+    suggestion: [
+      "Contrast can still be improved for texts below 18pt to go from a minimum contrast ratio (AA) to an optimal contrast ratio (AAA).",
+      "Contrast must be improved for text above 18pt to meet the minimum contrast ratio (AA).",
+    ],
     label: "error",
   },
   warning_error: {
     title: "Poor 😞",
     description:
-      "Poor contrast for large text sizes and normal contrast for small text sizes.",
+      "Colors only have a minimum contrast ratio (AA) in texts above 18pt",
+    suggestion: [
+      "Contrast can still be improved for texts above 18pt to go from a minimum contrast ratio (AA) to an optimal contrast ratio (AAA).",
+      "Contrast must be improved for text below 18pt to meet the minimum contrast ratio (AA).",
+    ],
     label: "error",
   },
   error_error: {
     title: "Very Poor 😭",
     description:
-      "Poor contrast for all text sizes. This color combination is not accessible to almost anyone.",
+      "Colors do not meet the minimum contrast ratio (AA) at all text sizes",
+    suggestion: ["It is recommended to review the colors to improve contrast."],
     label: "error",
   },
 };
