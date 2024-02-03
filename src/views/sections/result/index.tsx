@@ -1,10 +1,8 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar as FullStar } from "@fortawesome/free-solid-svg-icons";
-import { faStar as EmptyStar } from "@fortawesome/free-regular-svg-icons";
 import { useContrast } from "../../../hooks/useContrast";
 import { useEffect, useState } from "react";
-
-type Contrast = "good" | "warning" | "error";
+import { Contrast, textToShow } from "../../../helpers/texts";
+import { StarMakerSection } from "../../../components/stars";
+import { evaluateResult } from "../../../helpers/contrast-checker";
 
 interface State {
   smallText?: Contrast;
@@ -20,57 +18,48 @@ const ResultSection = () => {
   const { result } = useContrast();
   const [state, setState] = useState(defaultState);
 
-  useEffect(() => {
-    if (result) {
-      const _large =
-        result < 1 / 4.5 ? "good" : result < 1 / 3 ? "warning" : "error";
-      const _small =
-        result < 1 / 7 ? "good" : result < 1 / 4.5 ? "warning" : "error";
-
-      setState({ smallText: _small, largeText: _large });
-    }
-  }, [result]);
-
-  const contrast: Contrast = "good";
   const contrastColors = {
     good: "bg-green-600/30 text-green-900",
     warning: "bg-yellow-600/30 text-yellow-900",
     error: "bg-red-600/30 text-red-900",
   };
 
+  useEffect(() => {
+    if (result) {
+      const _large = evaluateResult(result, 1 / 4.5, 1 / 3);
+      const _small = evaluateResult(result, 1 / 7, 1 / 4.5);
+      setState({ smallText: _small, largeText: _large });
+    }
+  }, [result]);
+
   return (
     <section className="w-full lg:w-2/3 mx-auto">
       <div className="w-full flex flex-col lg:flex-row gap-0.5">
         <div
-          className={`w-2/3 flex flex-col content-center justify-center p-4 rounded-l-xl ${contrastColors[contrast]}`}
+          className={`w-2/3 flex flex-col content-center justify-center p-4 rounded-l-xl ${
+            contrastColors[
+              textToShow({
+                largeText: state.largeText!,
+                smallText: state.smallText!,
+              }).label as Contrast
+            ]
+          }`}
         >
           <p className="text-xl font-bold">
-            {state.largeText === "good" &&
-              state.smallText === "good" &&
-              "Excellent"}
-
-            {(state.largeText === "warning" && state.smallText === "good") ||
-              (state.largeText === "good" &&
-                state.smallText === "warning" &&
-                "Good")}
-
-            {(state.largeText === "error" && state.smallText === "good") ||
-              (state.largeText === "warning" &&
-                state.smallText === "warning") ||
-              (state.largeText === "good" &&
-                state.smallText === "error" &&
-                "Fair")}
-
-            {(state.largeText === "error" && state.smallText === "warning") ||
-              (state.largeText === "warning" && state.smallText === "error") ||
-              (state.largeText === "error" &&
-                state.smallText === "error" &&
-                "Poor")}
+            {
+              textToShow({
+                largeText: state.largeText!,
+                smallText: state.smallText!,
+              }).title
+            }
           </p>
-
           <p className="text-xs">
-            The contrast ratio between the text and the background is{" "}
-            {result?.toFixed(2)}
+            {
+              textToShow({
+                largeText: state.largeText!,
+                smallText: state.smallText!,
+              }).description
+            }
           </p>
         </div>
 
@@ -80,11 +69,7 @@ const ResultSection = () => {
           >
             <div className="text-xs flex justify-between">
               <h2 className="font-bold">Small Text</h2>
-              <div>
-                <FontAwesomeIcon icon={FullStar} />
-                <FontAwesomeIcon icon={FullStar} />
-                <FontAwesomeIcon icon={EmptyStar} />
-              </div>
+              <StarMakerSection assessment={state.largeText!} />
             </div>
           </div>
 
@@ -93,11 +78,7 @@ const ResultSection = () => {
           >
             <div className="text-xs flex justify-between">
               <h2 className="font-bold">Large Text</h2>
-              <div>
-                <FontAwesomeIcon icon={FullStar} />
-                <FontAwesomeIcon icon={FullStar} />
-                <FontAwesomeIcon icon={FullStar} />
-              </div>
+              <StarMakerSection assessment={state.smallText!} />
             </div>
           </div>
         </div>
