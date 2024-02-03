@@ -3,10 +3,13 @@ import { ColorInput } from "./components/input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as FullStar } from "@fortawesome/free-solid-svg-icons";
 import { faStar as EmptyStar } from "@fortawesome/free-regular-svg-icons";
+import { useContrast } from "./hooks/useContrast";
+import { CONSTANTS } from "./config/constants";
 
 type Contrast = "good" | "warning" | "error";
 
 const App = () => {
+  const { values } = useContrast();
   const contrast: Contrast = "good";
 
   const contrastColors = {
@@ -26,25 +29,33 @@ const App = () => {
           <div className="flex flex-col gap-4 w-full md:w-1/2 p-8">
             <div className="w-ful">
               <ColorInput
-                id="textColor"
+                id={CONSTANTS.ID.TEXT}
                 label="Text color"
-                defaultValue="000000"
+                defaultValue={CONSTANTS.COLORS.TEXT}
               />
             </div>
 
             <div className="w-full">
               <ColorInput
-                id="bgColor"
+                id={CONSTANTS.ID.BACKGROUND}
                 label="Background color"
-                defaultValue="ffffff"
+                defaultValue={CONSTANTS.COLORS.BACKGROUND}
               />
             </div>
           </div>
 
-          <div className="w-full md:w-1/2 flex flex-col items-center justify-center text-center p-8">
-            <p className="text-2xl font-bold">Title</p>
-
-            <p className="text">
+          <div
+            className="w-full md:w-1/2 flex flex-col items-center justify-center text-center p-8 rounded-tr-xl rounded-br-xl"
+            style={{
+              color: `#${values.textColor}`,
+              backgroundColor: `#${values.backgroundColor}`,
+            }}
+          >
+            <p className="text-3xl font-bold mb-2">Lorem ipsum.</p>
+            <p className="text text-sm">
+              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+            </p>
+            <p className="text text-xs">
               Lorem ipsum, dolor sit amet consectetur adipisicing elit.
             </p>
           </div>
@@ -61,7 +72,7 @@ const App = () => {
 
             <div className="w-full lg:w-1/2 flex flex-col gap-2 items-center">
               <div className="flex flex-col">
-                <p>Large text</p>
+                <p className="text-sm">Large text</p>
                 <div>
                   <FontAwesomeIcon icon={FullStar} />
                   <FontAwesomeIcon icon={FullStar} />
@@ -69,7 +80,7 @@ const App = () => {
                 </div>
               </div>
               <div className="flex flex-col">
-                <p>Normal text</p>
+                <p className="text-sm">Normal text</p>
                 <div>
                   <FontAwesomeIcon icon={FullStar} />
                   <FontAwesomeIcon icon={FullStar} />

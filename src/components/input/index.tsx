@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { useContrast } from "../../hooks/useContrast";
+import { CONSTANTS } from "../../config/constants";
 
 interface ColorInputProps {
   label: string;
@@ -9,14 +11,18 @@ interface ColorInputProps {
 const ColorInput = ({
   id,
   label,
-  defaultValue = "000000",
+  defaultValue = CONSTANTS.COLORS.DEFAULT,
 }: ColorInputProps) => {
   const [hex, setHex] = useState(defaultValue);
+  const { values, setValues } = useContrast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value.length > 6) return;
-    if (value.length <= 6) setHex(value);
+    if (value.length <= 6) {
+      setHex(value);
+      setValues && setValues({ ...values, [id]: value });
+    }
   };
 
   return (
@@ -34,11 +40,11 @@ const ColorInput = ({
           id={id}
           name={id}
           type="text"
-          className="w-full border rounded-lg p-2 pl-6"
+          className="w-full border rounded-lg p-2 pl-6 uppercase"
           value={hex}
           onChange={handleChange}
           onBlur={() => {
-            if (hex.length === 0) setHex("000000");
+            if (hex.length === 0) setHex(CONSTANTS.COLORS.DEFAULT);
           }}
         />
 
