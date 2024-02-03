@@ -13,6 +13,7 @@ const FormSection = () => {
             id={CONSTANTS.ID.TEXT}
             label="Text color"
             defaultValue={CONSTANTS.COLORS.TEXT}
+            enableColorPicker
           />
         </div>
 
@@ -21,6 +22,7 @@ const FormSection = () => {
             id={CONSTANTS.ID.BACKGROUND}
             label="Background color"
             defaultValue={CONSTANTS.COLORS.BACKGROUND}
+            enableColorPicker
           />
         </div>
       </div>

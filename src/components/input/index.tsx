@@ -7,15 +7,17 @@ interface ColorInputProps {
   label: string;
   id: string;
   defaultValue?: string;
+  enableColorPicker?: boolean;
 }
 
 const ColorInput = ({
   id,
   label,
   defaultValue = CONSTANTS.COLORS.DEFAULT,
+  enableColorPicker = false,
 }: ColorInputProps) => {
-  const [hex, setHex] = useState(defaultValue);
   const { values, setValues } = useContrast();
+  const [hex, setHex] = useState(defaultValue);
   const [show, setShow] = useState(false);
   const boxElementRef = useRef<HTMLDivElement>(null);
   const colorBoxElementRef = useRef<HTMLDivElement>(null);
@@ -67,13 +69,15 @@ const ColorInput = ({
         />
 
         <div
-          className="absolute top-1 right-1 border rounded-lg w-8 h-8 cursor-pointer"
+          className={`absolute top-1 right-1 border rounded-lg w-8 h-8 ${
+            enableColorPicker ? "cursor-pointer" : "cursor-default"
+          }`}
           style={{ backgroundColor: `#${hex}` }}
           ref={boxElementRef}
-          onClick={() => setShow(!show)}
+          onClick={() => enableColorPicker && setShow(!show)}
         />
 
-        {show && (
+        {enableColorPicker && show && (
           <div
             ref={colorBoxElementRef}
             className="w-72 absolute p-4 bg-white border rounded-lg shadow-lg z-10 right-0 lg:-right-32"
@@ -94,8 +98,8 @@ const ColorInput = ({
               </div>
 
               <input
-                id={id}
-                name={id}
+                id={`${id}-inside`}
+                name={`${id}-inside`}
                 type="text"
                 className="w-full border rounded-lg p-2 pl-6 uppercase"
                 value={hex}
