@@ -26,8 +26,8 @@ const ResultSection = () => {
 
   useEffect(() => {
     if (result) {
-      const _large = evaluateResult(result, 1 / 4.5, 1 / 3);
-      const _small = evaluateResult(result, 1 / 7, 1 / 4.5);
+      const _large = evaluateResult(result, 1 / 7, 1 / 4.5);
+      const _small = evaluateResult(result, 1 / 4.5, 1 / 3);
       setState({ smallText: _small, largeText: _large });
     }
   }, [result]);

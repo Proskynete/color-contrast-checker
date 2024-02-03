@@ -58,7 +58,7 @@ const ColorInput = ({
           id={id}
           name={id}
           type="text"
-          className="w-full border rounded-lg p-2 pl-6 uppercase"
+          className="w-full border rounded-lg p-2 pl-6 uppercase bg-transparent"
           value={hex}
           onChange={handleChange}
           onBlur={() => {
@@ -87,6 +87,26 @@ const ColorInput = ({
                   setValues({ ...values, [id]: color.split("#")[1] });
               }}
             />
+
+            <div className="relative w-full h-fit mt-4">
+              <div className="absolute flex h-full pl-3 items-center justify-center">
+                <span>#</span>
+              </div>
+
+              <input
+                id={id}
+                name={id}
+                type="text"
+                className="w-full border rounded-lg p-2 pl-6 uppercase"
+                value={hex}
+                onChange={handleChange}
+              />
+
+              <div
+                className="absolute top-1 right-1 border rounded-lg w-8 h-8"
+                style={{ backgroundColor: `#${hex}` }}
+              />
+            </div>
           </div>
         )}
       </div>
