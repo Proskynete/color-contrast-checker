@@ -3,7 +3,7 @@
    <img src="https://cdn.iconscout.com/icon/free/png-256/typescript-1174965.png" width="25" height="25" />
  </h1>
 
-![Color Contrast Checker](https://github.com/Proskynete/color-contrast-checker/blob/master/public/cover_image.png "How to see color-contrast-checker")
+![Color Contrast Checker](https://github.com/Proskynete/color-contrast-checker/blob/main/public/cover_image.png "How to see color-contrast-checker")
 
 ## Status
 
@@ -27,7 +27,6 @@
       </ul>
     </li>
     <li><a href="#how-to-use">🚀 How to use</a></li>
-    <li><a href="#questions">❓ Questions</a></li>
   </ol>
 </details>
 
@@ -97,6 +96,6 @@ Then, we will have to do the same process, but now with the background color, wi
 Once we have the two colors in the corresponding inputs, the application will tell us if the color contrast is accessible or not.
 We also have a section to preview the selected colors and how they look within a site. To do this, we can use the section next to the form. We can see it with dummy text.
 
-![Preview with dummy text](https://github.com/Proskynete/color-contrast-checker/blob/master/public/cover_image.png "Preview with dummy text")
+![Preview with dummy text](https://github.com/Proskynete/color-contrast-checker/blob/main/public/example.jpg "Preview with dummy text")
 
 <div align="right"><a href="#top">🔝</a></div>
