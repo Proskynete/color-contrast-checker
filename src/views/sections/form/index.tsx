@@ -28,7 +28,7 @@ const FormSection = () => {
       </div>
 
       <div
-        className="w-full md:w-1/2 flex flex-col items-center justify-center text-center p-8 rounded-tr-xl rounded-br-xl"
+        className="w-full md:w-1/2 flex flex-col items-center justify-center text-center md:p-8 py-20 rounded-b-xl md:rounded-tr-xl md:rounded-bl-none"
         style={{
           color: `#${values.textColor}`,
           backgroundColor: `#${values.backgroundColor}`,

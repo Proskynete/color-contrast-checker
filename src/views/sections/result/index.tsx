@@ -44,8 +44,6 @@ const ResultSection = () => {
         </div>
 
         <div className="w-full lg:w-1/3 flex flex-col gap-0.5">
-          {/* how to improve textSizes array transform to generic array of objects */}
-
           {textSizes.map((ele) => (
             <div
               className={`p-4 ${
