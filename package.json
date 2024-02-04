@@ -1,5 +1,6 @@
 {
   "name": "color-contrast-checker",
+  "description": "Calculate the contrast ratio of text and background colors",
   "private": false,
   "version": "1.0.0",
   "type": "module",
@@ -34,5 +35,18 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
-  }
+  },
+  "author": {
+    "name": "Eduardo Esteban Álvarez Castañeda",
+    "email": "soy@eduardoalvarez.dev",
+    "url": "https://eduardoalvarez.dev"
+  },
+  "keywords": [
+    "typescript",
+    "react",
+    "vite",
+    "tailwindcss",
+    "color-contrast",
+    "color-contrast-checker"
+  ]
 }
