@@ -3,7 +3,7 @@
    <img src="https://cdn.iconscout.com/icon/free/png-256/typescript-1174965.png" width="25" height="25" />
  </h1>
 
-![Color Contrast Checker](https://github.com/Proskynete/color-contrast-checker/blob/main/public/cover_image.png "How to see color-contrast-checker")
+![Color Contrast Checker](https://github.com/Proskynete/color-contrast-checker/blob/main/public/color-contrast-checker.webp "How to see color-contrast-checker")
 
 ## Status
 
