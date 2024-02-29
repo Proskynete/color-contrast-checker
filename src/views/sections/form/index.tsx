@@ -39,7 +39,7 @@ const FormSection = () => {
                       id={`${CONSTANTS.ID.TEXT}-inside`}
                       name={`${CONSTANTS.ID.TEXT}-inside`}
                       type="text"
-                      className="w-full border rounded-lg p-2 pl-6 uppercase"
+                      className="w-full rounded-lg p-2 pl-6 uppercase bg-transparent border border-spacing-0.5 hover:border-gray-400 focus:border-blue-400 focus:outline-none transition-colors duration-300"
                       value={hexValue}
                       onChange={onInputChange}
                     />
@@ -85,7 +85,7 @@ const FormSection = () => {
                       id={`${CONSTANTS.ID.BACKGROUND}-inside`}
                       name={`${CONSTANTS.ID.BACKGROUND}-inside`}
                       type="text"
-                      className="w-full border rounded-lg p-2 pl-6 uppercase"
+                      className="w-full rounded-lg p-2 pl-6 uppercase bg-transparent border border-spacing-0.5 hover:border-gray-400 focus:border-blue-400 focus:outline-none transition-colors duration-300"
                       value={hexValue}
                       onChange={onInputChange}
                     />
