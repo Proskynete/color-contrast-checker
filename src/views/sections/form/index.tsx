@@ -18,7 +18,7 @@ const FormSection = () => {
               <>
                 <HexColorPicker
                   color={hexValue}
-                  className="!w-auto !h-auto aspect-[3/2]"
+                  className="!w-full md:!w-auto md:!h-auto md:aspect-[3/2]"
                   onChange={(color) => {
                     setHexValue(color.split("#")[1]);
                     setValues &&
@@ -64,7 +64,7 @@ const FormSection = () => {
               <>
                 <HexColorPicker
                   color={hexValue}
-                  className="!w-auto !h-auto aspect-[3/2]"
+                  className="!w-full md:!w-auto md:!h-auto md:aspect-[3/2]"
                   onChange={(color) => {
                     setHexValue(color.split("#")[1]);
                     setValues &&
@@ -91,7 +91,7 @@ const FormSection = () => {
                     />
 
                     <div
-                      className="absolute top-1 right-1 border rounded-lg w-8 h-8"
+                      className="absolute top-1 right-1 border border-gray-300 rounded-lg w-8 h-8"
                       style={{ backgroundColor: `#${hexValue}` }}
                     />
                   </div>
