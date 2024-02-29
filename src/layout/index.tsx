@@ -7,7 +7,7 @@ const PrincipalLayout = ({ children }: PropsWithChildren) => {
     <div className="w-screen h-screen grid grid-rows-[auto,1fr,auto] overflow-x-hidden">
       <Header />
 
-      <main className="w-full lg:w-4/5 max-w-4xl mx-auto px-10 md:mt-24 flex flex-col gap-2">
+      <main className="w-full max-w-4xl flex flex-col gap-2 mx-auto px-10 mt-8 mb-24 lg:w-4/5 md:mb-0 md:mt-20">
         <hgroup className="flex flex-col my-5">
           <h1 className="text-4xl font-bold text-center">
             Color Contrast Checker
@@ -18,7 +18,7 @@ const PrincipalLayout = ({ children }: PropsWithChildren) => {
           </h2>
         </hgroup>
 
-        <div className="flex flex-col gap-2 mb-24 md:mb-0">{children}</div>
+        <div className="flex flex-col gap-2">{children}</div>
       </main>
 
       <Footer />
