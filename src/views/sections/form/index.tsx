@@ -18,7 +18,7 @@ const FormSection = () => {
               <>
                 <HexColorPicker
                   color={hexValue}
-                  className="!w-auto !h-auto aspect-[3/2]"
+                  className="!w-full md:!w-auto md:!h-auto md:aspect-[3/2]"
                   onChange={(color) => {
                     setHexValue(color.split("#")[1]);
                     setValues &&
@@ -39,7 +39,7 @@ const FormSection = () => {
                       id={`${CONSTANTS.ID.TEXT}-inside`}
                       name={`${CONSTANTS.ID.TEXT}-inside`}
                       type="text"
-                      className="w-full border rounded-lg p-2 pl-6 uppercase"
+                      className="w-full rounded-lg p-2 pl-6 uppercase bg-transparent border border-spacing-0.5 hover:border-gray-400 focus:border-blue-400 focus:outline-none transition-colors duration-300"
                       value={hexValue}
                       onChange={onInputChange}
                     />
@@ -64,7 +64,7 @@ const FormSection = () => {
               <>
                 <HexColorPicker
                   color={hexValue}
-                  className="!w-auto !h-auto aspect-[3/2]"
+                  className="!w-full md:!w-auto md:!h-auto md:aspect-[3/2]"
                   onChange={(color) => {
                     setHexValue(color.split("#")[1]);
                     setValues &&
@@ -85,13 +85,13 @@ const FormSection = () => {
                       id={`${CONSTANTS.ID.BACKGROUND}-inside`}
                       name={`${CONSTANTS.ID.BACKGROUND}-inside`}
                       type="text"
-                      className="w-full border rounded-lg p-2 pl-6 uppercase"
+                      className="w-full rounded-lg p-2 pl-6 uppercase bg-transparent border border-spacing-0.5 hover:border-gray-400 focus:border-blue-400 focus:outline-none transition-colors duration-300"
                       value={hexValue}
                       onChange={onInputChange}
                     />
 
                     <div
-                      className="absolute top-1 right-1 border rounded-lg w-8 h-8"
+                      className="absolute top-1 right-1 border border-gray-300 rounded-lg w-8 h-8"
                       style={{ backgroundColor: `#${hexValue}` }}
                     />
                   </div>

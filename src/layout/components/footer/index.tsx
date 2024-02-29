@@ -1,15 +1,19 @@
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white px-10">
-      <div className="my-4 md:my-8 flex flex-col">
+    <footer className="bg-gray-800 text-gray-400 px-10">
+      <div className="my-4 md:my-6">
         <div className="w-full flex flex-row justify-center md:justify-end">
-          <div className=" flex space-x-2 text-sm">
-            <pre className="text-xs">
-              $ cd ~/
-              <a href="https://eduardoalvarez.dev/">eduardoalvarez.dev</a>/2024
-              <span className="w-1 h-4 inline-block bg-primary-800 dark:bg-gray-400 ml-1 rounded-sm motion-safe:animate-ping motion-safe:duration-75" />
-            </pre>
-          </div>
+          <pre className="text-xs font-thin">
+            Color Contras Checker developed by{" "}
+            <a
+              href="https://eduardoalvarez.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white"
+            >
+              Eduardo Álvarez
+            </a>
+          </pre>
         </div>
       </div>
     </footer>

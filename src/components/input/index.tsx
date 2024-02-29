@@ -49,49 +49,60 @@ const ColorInput = ({
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="block text-sm font-bold">
-        {label}
-      </label>
+    <>
+      <div
+        className={`w-screen h-screen bg-black/60 fixed top-0 right-0 z-10 transition duration-300 
+        ${show ? "opacity-1" : "opacity-0 pointer-events-none"}`}
+      />
 
-      <div className="relative w-full h-fit">
-        <div className="absolute flex h-full pl-3 items-center justify-center">
-          <span>#</span>
-        </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor={id} className="block text-sm font-bold">
+          {label}
+        </label>
 
-        <input
-          id={id}
-          name={id}
-          type="text"
-          className="w-full rounded-lg p-2 pl-6 uppercase bg-transparent border border-spacing-0.5 hover:border-gray-400 focus:border-blue-400 focus:outline-none transition-colors duration-300"
-          value={hex}
-          onChange={handleChange}
-          onBlur={() => {
-            if (hex.length === 0) setHex(CONSTANTS.COLORS.DEFAULT);
-          }}
-        />
+        <div className="relative w-full h-fit">
+          <div className="absolute flex h-full pl-3 items-center justify-center">
+            <span>#</span>
+          </div>
 
-        <div
-          className={`absolute top-1 right-1 border rounded-lg w-8 h-8 ${
-            enableColorPicker !== undefined
-              ? "cursor-pointer"
-              : "cursor-default"
-          }`}
-          style={{ backgroundColor: `#${hex}` }}
-          ref={boxElementRef}
-          onClick={() => enableColorPicker !== undefined && setShow(!show)}
-        />
+          <input
+            id={id}
+            name={id}
+            type="text"
+            className="w-full rounded-lg p-2 pl-6 uppercase bg-transparent border border-spacing-0.5 hover:border-gray-400 focus:border-blue-400 focus:outline-none transition-colors duration-300"
+            value={hex}
+            onChange={handleChange}
+            onBlur={() => {
+              if (hex.length === 0) setHex(CONSTANTS.COLORS.DEFAULT);
+            }}
+          />
 
-        {enableColorPicker !== undefined && show && (
+          <div
+            className={`absolute top-1 right-1 border rounded-lg w-8 h-8 ${
+              enableColorPicker !== undefined
+                ? "cursor-pointer"
+                : "cursor-default"
+            }`}
+            style={{ backgroundColor: `#${hex}` }}
+            ref={boxElementRef}
+            onClick={() => enableColorPicker !== undefined && setShow(!show)}
+          />
+
           <div
             ref={colorBoxElementRef}
-            className="w-72 absolute grid p-3 bg-white border rounded-lg shadow-lg z-10 bottom-11 right-0 lg:-right-32"
+            className={`w-full h-[19rem] fixed bottom-0 right-0 grid p-5 bg-white border z-20 transition duration-300 md:max-h-fit mx-auto md:w-72 md:p-3 md:absolute md:rounded-lg md:shadow-lg md:bottom-11 md:-right-32
+              ${
+                enableColorPicker !== undefined && show
+                  ? "opacity-100"
+                  : "opacity-0 pointer-events-none"
+              }
+            `}
           >
             {enableColorPicker(hex, setHex, handleChange)}
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
