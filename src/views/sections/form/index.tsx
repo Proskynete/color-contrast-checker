@@ -1,9 +1,10 @@
 import { CONSTANTS } from "../../../config/constants";
 import { useContrast } from "../../../hooks/useContrast";
 import { ColorInput } from "../../../components/input";
+import { HexColorPicker } from "react-colorful";
 
 const FormSection = () => {
-  const { values } = useContrast();
+  const { values, setValues } = useContrast();
 
   return (
     <section className="border rounded-xl flex flex-col md:flex-row gap-5 divide-x">
@@ -13,7 +14,44 @@ const FormSection = () => {
             id={CONSTANTS.ID.TEXT}
             label="Text color"
             defaultValue={CONSTANTS.COLORS.TEXT}
-            enableColorPicker
+            enableColorPicker={(hexValue, setHexValue, onInputChange) => (
+              <>
+                <HexColorPicker
+                  color={hexValue}
+                  className="!w-auto !h-auto aspect-[3/2]"
+                  onChange={(color) => {
+                    setHexValue(color.split("#")[1]);
+                    setValues &&
+                      setValues({
+                        ...values,
+                        [CONSTANTS.ID.TEXT]: color.split("#")[1],
+                      });
+                  }}
+                />
+
+                <div className="w-full h-fit mt-4">
+                  <div className="relative">
+                    <div className="absolute flex h-full pl-3 items-center justify-center">
+                      <span>#</span>
+                    </div>
+
+                    <input
+                      id={`${CONSTANTS.ID.TEXT}-inside`}
+                      name={`${CONSTANTS.ID.TEXT}-inside`}
+                      type="text"
+                      className="w-full border rounded-lg p-2 pl-6 uppercase"
+                      value={hexValue}
+                      onChange={onInputChange}
+                    />
+
+                    <div
+                      className="absolute top-1 right-1 border rounded-lg w-8 h-8"
+                      style={{ backgroundColor: `#${hexValue}` }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           />
         </div>
 
@@ -22,7 +60,44 @@ const FormSection = () => {
             id={CONSTANTS.ID.BACKGROUND}
             label="Background color"
             defaultValue={CONSTANTS.COLORS.BACKGROUND}
-            enableColorPicker
+            enableColorPicker={(hexValue, setHexValue, onInputChange) => (
+              <>
+                <HexColorPicker
+                  color={hexValue}
+                  className="!w-auto !h-auto aspect-[3/2]"
+                  onChange={(color) => {
+                    setHexValue(color.split("#")[1]);
+                    setValues &&
+                      setValues({
+                        ...values,
+                        [CONSTANTS.ID.BACKGROUND]: color.split("#")[1],
+                      });
+                  }}
+                />
+
+                <div className="w-full h-fit mt-4">
+                  <div className="relative">
+                    <div className="absolute flex h-full pl-3 items-center justify-center">
+                      <span>#</span>
+                    </div>
+
+                    <input
+                      id={`${CONSTANTS.ID.BACKGROUND}-inside`}
+                      name={`${CONSTANTS.ID.BACKGROUND}-inside`}
+                      type="text"
+                      className="w-full border rounded-lg p-2 pl-6 uppercase"
+                      value={hexValue}
+                      onChange={onInputChange}
+                    />
+
+                    <div
+                      className="absolute top-1 right-1 border rounded-lg w-8 h-8"
+                      style={{ backgroundColor: `#${hexValue}` }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           />
         </div>
       </div>

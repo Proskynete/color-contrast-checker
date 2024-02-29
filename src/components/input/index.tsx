@@ -1,20 +1,23 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useContrast } from "../../hooks/useContrast";
 import { CONSTANTS } from "../../config/constants";
-import { HexColorPicker } from "react-colorful";
 
 interface ColorInputProps {
   label: string;
   id: string;
   defaultValue?: string;
-  enableColorPicker?: boolean;
+  enableColorPicker: (
+    hexValue: string,
+    setHexValue: (value: string) => void,
+    onInputChange: (e: ChangeEvent<HTMLInputElement>) => void
+  ) => JSX.Element | undefined;
 }
 
 const ColorInput = ({
   id,
   label,
   defaultValue = CONSTANTS.COLORS.DEFAULT,
-  enableColorPicker = false,
+  enableColorPicker,
 }: ColorInputProps) => {
   const { values, setValues } = useContrast();
   const [hex, setHex] = useState(defaultValue);
@@ -46,7 +49,7 @@ const ColorInput = ({
   }, []);
 
   return (
-    <div className="relative flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <label htmlFor={id} className="block text-sm font-bold">
         {label}
       </label>
@@ -60,7 +63,7 @@ const ColorInput = ({
           id={id}
           name={id}
           type="text"
-          className="w-full border rounded-lg p-2 pl-6 uppercase bg-transparent"
+          className="w-full rounded-lg p-2 pl-6 uppercase bg-transparent border border-spacing-0.5 hover:border-gray-400 focus:border-blue-400 focus:outline-none transition-colors duration-300"
           value={hex}
           onChange={handleChange}
           onBlur={() => {
@@ -70,47 +73,21 @@ const ColorInput = ({
 
         <div
           className={`absolute top-1 right-1 border rounded-lg w-8 h-8 ${
-            enableColorPicker ? "cursor-pointer" : "cursor-default"
+            enableColorPicker !== undefined
+              ? "cursor-pointer"
+              : "cursor-default"
           }`}
           style={{ backgroundColor: `#${hex}` }}
           ref={boxElementRef}
-          onClick={() => enableColorPicker && setShow(!show)}
+          onClick={() => enableColorPicker !== undefined && setShow(!show)}
         />
 
-        {enableColorPicker && show && (
+        {enableColorPicker !== undefined && show && (
           <div
             ref={colorBoxElementRef}
-            className="w-72 absolute p-4 bg-white border rounded-lg shadow-lg z-10 right-0 lg:-right-32"
+            className="w-72 absolute grid p-3 bg-white border rounded-lg shadow-lg z-10 bottom-11 right-0 lg:-right-32"
           >
-            <HexColorPicker
-              color={hex}
-              className="!w-auto"
-              onChange={(color) => {
-                setHex(color.split("#")[1]);
-                setValues &&
-                  setValues({ ...values, [id]: color.split("#")[1] });
-              }}
-            />
-
-            <div className="relative w-full h-fit mt-4">
-              <div className="absolute flex h-full pl-3 items-center justify-center">
-                <span>#</span>
-              </div>
-
-              <input
-                id={`${id}-inside`}
-                name={`${id}-inside`}
-                type="text"
-                className="w-full border rounded-lg p-2 pl-6 uppercase"
-                value={hex}
-                onChange={handleChange}
-              />
-
-              <div
-                className="absolute top-1 right-1 border rounded-lg w-8 h-8"
-                style={{ backgroundColor: `#${hex}` }}
-              />
-            </div>
+            {enableColorPicker(hex, setHex, handleChange)}
           </div>
         )}
       </div>

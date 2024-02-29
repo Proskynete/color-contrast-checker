@@ -44,8 +44,9 @@ const ResultSection = () => {
         </div>
 
         <div className="w-full lg:w-1/3 flex flex-col gap-0.5">
-          {textSizes.map((ele) => (
+          {textSizes.map((ele, i) => (
             <div
+              key={`text-size-${i}`}
               className={`p-4 ${
                 contrastColors[state[ele.assessment] as Contrast]
               } ${ele.customStyles}`}
