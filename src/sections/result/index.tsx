@@ -1,9 +1,11 @@
-import { useContrast } from "../../../hooks/useContrast";
+"use client";
+
+import { StarMakerSection } from "@/components/stars";
+import { contrastColors, textSizes } from "@/config/constants";
+import { evaluateResult } from "@/helpers/contrast-checker";
+import { Contrast, textToShow } from "@/helpers/texts";
+import { useContrast } from "@/hooks/useContrast";
 import { useEffect, useState } from "react";
-import { Contrast, textToShow } from "../../../helpers/texts";
-import { StarMakerSection } from "../../../components/stars";
-import { evaluateResult } from "../../../helpers/contrast-checker";
-import { contrastColors, textSizes } from "../../../config/constants";
 
 export interface ResultSectionState {
   smallText?: Contrast;

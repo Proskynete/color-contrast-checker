@@ -1,15 +1,14 @@
 {
   "name": "color-contrast-checker",
   "description": "Calculate the contrast ratio of text and background colors",
-  "private": false,
   "version": "1.0.0",
-  "type": "module",
+  "private": false,
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
@@ -18,24 +17,24 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@supabase/supabase-js": "^2.39.7",
-    "react": "^18.2.0",
+    "react": "^18",
     "react-colorful": "^5.6.1",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18",
+    "next": "14.1.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.17",
-    "eslint": "^8.55.0",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "eslint": "^8",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "postcss": "^8.4.33",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "eslint-config-next": "14.1.1"
   },
   "author": {
     "name": "Eduardo Esteban Álvarez Castañeda",
@@ -45,7 +44,7 @@
   "keywords": [
     "typescript",
     "react",
-    "vite",
+    "next.js",
     "tailwindcss",
     "color-contrast",
     "color-contrast-checker"

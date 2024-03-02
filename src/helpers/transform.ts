@@ -1,3 +1,5 @@
+"use client";
+
 export const transformHexToRgb = (hex: string) => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function (_m, r, g, b) {

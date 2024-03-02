@@ -1,4 +1,12 @@
-import { PropsWithChildren, createContext, useEffect, useState } from "react";
+"use client";
+
+import {
+  PropsWithChildren,
+  createContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { CONSTANTS } from "../config/constants";
 import { transformHexToRgb } from "../helpers/transform";
 import { verifyLuminance } from "../helpers/verify-luminance";
@@ -41,14 +49,14 @@ export const ContrastProvider = ({
     );
 
     const textLuminance = verifyLuminance(
-      textColorRGB?.r || 0,
-      textColorRGB?.g || 0,
-      textColorRGB?.b || 0
+      textColorRGB?.r ?? 0,
+      textColorRGB?.g ?? 0,
+      textColorRGB?.b ?? 0
     );
     const bgLuminance = verifyLuminance(
-      backgroundColorRGB?.r || 0,
-      backgroundColorRGB?.g || 0,
-      backgroundColorRGB?.b || 0
+      backgroundColorRGB?.r ?? 0,
+      backgroundColorRGB?.g ?? 0,
+      backgroundColorRGB?.b ?? 0
     );
 
     setContrast(
@@ -57,14 +65,17 @@ export const ContrastProvider = ({
     setState(values);
   };
 
+  const _values = useMemo(
+    () => ({
+      values: state,
+      result: contrast,
+      setValues: setValuesHandler,
+    }),
+    [state, contrast]
+  );
+
   return (
-    <ContrastContext.Provider
-      value={{
-        values: state,
-        result: contrast,
-        setValues: setValuesHandler,
-      }}
-    >
+    <ContrastContext.Provider value={_values}>
       {children}
     </ContrastContext.Provider>
   );

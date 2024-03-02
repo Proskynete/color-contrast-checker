@@ -1,4 +1,4 @@
-import { ResultSectionState } from "../views/sections/result";
+import { ResultSectionState } from "@/sections/result";
 
 export const CONSTANTS = {
   COLORS: {

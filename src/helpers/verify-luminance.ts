@@ -1,3 +1,5 @@
+"use client";
+
 export const verifyLuminance = (r: number, g: number, b: number) => {
   const a = [r, g, b].map((v) => {
     v /= 255;

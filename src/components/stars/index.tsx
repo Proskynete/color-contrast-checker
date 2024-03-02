@@ -1,3 +1,5 @@
+"use client";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as FullStar } from "@fortawesome/free-solid-svg-icons";
 import { faStar as EmptyStar } from "@fortawesome/free-regular-svg-icons";
@@ -23,8 +25,8 @@ const StarMakerSection = ({ assessment }: StarMakerSectionProps) => {
 
   return (
     <div>
-      {stars.map((star, index) => (
-        <FontAwesomeIcon key={index} icon={star} />
+      {stars.map((star, i) => (
+        <FontAwesomeIcon key={i} icon={star} />
       ))}
     </div>
   );

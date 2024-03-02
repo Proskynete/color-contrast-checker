@@ -1,10 +1,13 @@
-import { CONSTANTS } from "../../../config/constants";
-import { useContrast } from "../../../hooks/useContrast";
-import { ColorInput } from "../../../components/input";
+"use client";
+
+import { ColorInput } from "@/components/input";
+import { CONSTANTS } from "@/config/constants";
+import ContrastContext from "@/contexts/contrast";
+import { useContext } from "react";
 import { HexColorPicker } from "react-colorful";
 
 const FormSection = () => {
-  const { values, setValues } = useContrast();
+  const { values, setValues } = useContext(ContrastContext);
 
   return (
     <section className="border rounded-xl flex flex-col md:flex-row gap-5 divide-x">

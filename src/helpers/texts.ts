@@ -1,3 +1,5 @@
+"use client";
+
 export type Contrast = "good" | "warning" | "error";
 
 interface TextMapping {

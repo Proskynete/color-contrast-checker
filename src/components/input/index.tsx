@@ -1,3 +1,5 @@
+"use client";
+
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useContrast } from "../../hooks/useContrast";
 import { CONSTANTS } from "../../config/constants";
@@ -78,6 +80,7 @@ const ColorInput = ({
           />
 
           <div
+            role="button"
             className={`absolute top-1 right-1 border rounded-lg w-8 h-8 ${
               enableColorPicker !== undefined
                 ? "cursor-pointer"
