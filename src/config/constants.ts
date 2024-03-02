@@ -38,3 +38,7 @@ export const textSizes: TextSizes[] = [
       "rounded-xl lg:rounded-br-xl lg:rounded-l-none lg:rounded-tr-none",
   },
 ];
+
+export const PROVIDERS = {
+  GITHUB: "github",
+};
