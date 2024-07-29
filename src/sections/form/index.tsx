@@ -1,7 +1,7 @@
 "use client";
 
 import { ColorInput } from "@/components/input";
-import { CONSTANTS } from "@/config/constants";
+import { CONSTANTS } from "@/constants";
 import ContrastContext from "@/contexts/contrast";
 import { useContext } from "react";
 import { HexColorPicker } from "react-colorful";

@@ -1,18 +1,14 @@
 "use client";
 
-import type { Session, Provider } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabase.connect";
-
-import { PROVIDERS } from "../../../config/constants";
+import type { Session, Provider } from "@supabase/supabase-js";
+import { PROVIDERS } from "@/constants";
+import { supabase } from "@/utils/supabase.connect";
+import { login, logout } from "./_actions";
 
 const Header = () => {
   const [session, setSession] = useState<Session | null>(null);
-
-  const getUserSession = async () => {
-    const session = await supabase.auth.getSession();
-    setSession(session.data.session);
-  };
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     getUserSession();
@@ -22,35 +18,41 @@ const Header = () => {
     });
   }, []);
 
-  const handleSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: PROVIDERS.GITHUB as Provider,
-      });
+  const getUserSession = async () => {
+    setLoading(true);
+    const info = await supabase.auth.getSession();
+    setSession(info.data.session);
+    setLoading(false);
+  };
 
-      if (error) throw error;
-    } catch (error) {
-      console.error("Error logging in:", error);
+  const handleSignIn = (provider: Provider) => async () => {
+    setLoading(true);
+    try {
+      await login(provider);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
+    setLoading(true);
+    logout();
+    setLoading(false);
   };
 
   return (
-    <header className="w-full flex justify-end text-center py-6 px-5 xl:px-12 bg-gray-800 text-white">
-      {session ? (
+    <header className="w-full min-h-20 flex justify-end items-center px-5 xl:px-12 bg-gray-800 text-white gap-4">
+      {loading ? (
+        <p className="text-sm text-gray-400">Loading...</p>
+      ) : session ? (
         <>
-          <p className="mr-2">Hey {session.user.email}</p>
+          <p className="text-sm text-gray-400">Hey {session.user.email} 👋</p>
           <button onClick={handleSignOut}>Logout</button>
         </>
       ) : (
-        <button onClick={handleSignIn}>Sing in</button>
+        <button onClick={handleSignIn(PROVIDERS.GITHUB)}>Sing in</button>
       )}
     </header>
   );

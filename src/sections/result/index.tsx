@@ -1,7 +1,7 @@
 "use client";
 
 import { StarMakerSection } from "@/components/stars";
-import { contrastColors, textSizes } from "@/config/constants";
+import { contrastColors, textSizes } from "@/constants";
 import { evaluateResult } from "@/helpers/contrast-checker";
 import { Contrast, textToShow } from "@/helpers/texts";
 import { useContrast } from "@/hooks/useContrast";

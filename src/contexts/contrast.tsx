@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CONSTANTS } from "../config/constants";
+import { CONSTANTS } from "../constants";
 import { transformHexToRgb } from "../helpers/transform";
 import { verifyLuminance } from "../helpers/verify-luminance";
 import { contrastChecker } from "../helpers/contrast-checker";

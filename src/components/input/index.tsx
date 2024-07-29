@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useContrast } from "../../hooks/useContrast";
-import { CONSTANTS } from "../../config/constants";
+import { CONSTANTS } from "../../constants";
 
 interface ColorInputProps {
   label: string;
