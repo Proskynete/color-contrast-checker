@@ -1,6 +1,6 @@
 "use client";
 
-import { type Session, type Provider } from "@supabase/supabase-js";
+import type { Session, Provider } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase.connect";
 
@@ -45,7 +45,10 @@ const Header = () => {
   return (
     <header className="w-full flex justify-end text-center py-6 px-5 xl:px-12 bg-gray-800 text-white">
       {session ? (
-        <button onClick={handleSignOut}>Logout</button>
+        <>
+          <p className="mr-2">Hey {session.user.email}</p>
+          <button onClick={handleSignOut}>Logout</button>
+        </>
       ) : (
         <button onClick={handleSignIn}>Sing in</button>
       )}

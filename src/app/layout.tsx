@@ -1,7 +1,6 @@
-import { Header } from "@/components/layout/header";
-
 import type { Metadata } from "next";
-import { Footer } from "@/components/layout/footer";
+import { Header } from "./_components/header";
+import { Footer } from "./_components/footer";
 
 export const metadata: Metadata = {
   title: "Color Contrast Checker",
