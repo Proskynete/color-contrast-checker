@@ -12,7 +12,7 @@ const FormSection = () => {
   return (
     <section className="border rounded-xl flex flex-col md:flex-row gap-5 divide-x">
       <div className="flex flex-col gap-4 w-full md:w-1/2 p-8">
-        <div className="w-ful">
+        <div className="w-full">
           <ColorInput
             id={CONSTANTS.ID.TEXT}
             label="Text color"
@@ -21,7 +21,7 @@ const FormSection = () => {
               <>
                 <HexColorPicker
                   color={hexValue}
-                  className="!w-full md:!w-auto md:!h-auto md:aspect-[3/2]"
+                  className="min-w-full md:w-auto md:h-auto md:aspect-[3/2]"
                   onChange={(color) => {
                     setHexValue(color.split("#")[1]);
                     setValues &&
@@ -67,7 +67,7 @@ const FormSection = () => {
               <>
                 <HexColorPicker
                   color={hexValue}
-                  className="!w-full md:!w-auto md:!h-auto md:aspect-[3/2]"
+                  className="min-w-full md:w-auto md:h-auto md:aspect-[3/2]"
                   onChange={(color) => {
                     setHexValue(color.split("#")[1]);
                     setValues &&

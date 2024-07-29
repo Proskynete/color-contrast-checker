@@ -6,13 +6,13 @@ import "../assets/styles/utilities.css";
 
 import { FormSection } from "@/sections/form";
 import { ResultSection } from "@/sections/result";
-import { Provider } from "./provider";
+import { ContrastProvider, defaultContrast } from "@/contexts/contrast";
 
 export default function Page() {
   return (
-    <Provider>
+    <ContrastProvider values={defaultContrast}>
       <FormSection />
       <ResultSection />
-    </Provider>
+    </ContrastProvider>
   );
 }

@@ -32,8 +32,8 @@ const ContrastContext = createContext<ContrastProviderProps>({
 });
 
 export const ContrastProvider = ({
-  children,
   values,
+  children,
 }: PropsWithChildren<ContrastProviderProps>) => {
   const [state, setState] = useState(values);
   const [contrast, setContrast] = useState(0);

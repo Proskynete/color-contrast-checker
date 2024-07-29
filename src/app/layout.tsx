@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   keywords: "color, contrast, checker, accessibility, a11y",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+type RootLayoutProps = Readonly<{
   children: React.ReactNode;
-}>) {
+}>;
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <head>

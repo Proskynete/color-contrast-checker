@@ -57,7 +57,7 @@ const ColorInput = ({
         ${show ? "opacity-1" : "opacity-0 pointer-events-none"}`}
       />
 
-      <div className="flex flex-col gap-2">
+      <div className="relative flex flex-col gap-2">
         <label htmlFor={id} className="block text-sm font-bold">
           {label}
         </label>
