@@ -1,8 +1,6 @@
 "use client";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar as FullStar } from "@fortawesome/free-solid-svg-icons";
-import { faStar as EmptyStar } from "@fortawesome/free-regular-svg-icons";
+import { FaStar, FaRegStar } from "react-icons/fa6";
 import { Contrast } from "../../helpers/texts";
 import { useEffect, useState } from "react";
 
@@ -11,23 +9,24 @@ interface StarMakerSectionProps {
 }
 
 const StarMakerSection = ({ assessment }: StarMakerSectionProps) => {
-  const [stars, setStars] = useState(Array(3).fill(EmptyStar));
+  const [stars, setStars] = useState(Array(3).fill(FaStar));
 
   useEffect(() => {
     if (assessment === "good") {
-      setStars(Array(3).fill(FullStar));
+      setStars(Array(3).fill(FaStar));
     } else if (assessment === "warning") {
-      setStars([FullStar, FullStar, EmptyStar]);
+      setStars([FaStar, FaStar, FaRegStar]);
     } else {
-      setStars([FullStar, EmptyStar, EmptyStar]);
+      setStars([FaStar, FaRegStar, FaRegStar]);
     }
   }, [assessment]);
 
   return (
-    <div>
-      {stars.map((star, i) => (
-        <FontAwesomeIcon key={i} icon={star} />
-      ))}
+    <div className="flex gap-1">
+      {stars.map((star, i) => {
+        const IconComponent = star;
+        return <IconComponent key={i} />;
+      })}
     </div>
   );
 };
