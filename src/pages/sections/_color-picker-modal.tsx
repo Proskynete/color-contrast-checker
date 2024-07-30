@@ -1,20 +1,49 @@
 import { useState } from "react";
 import { Input } from "../../components/input";
 import { ColorPickerModal } from "../../components/color-picker-modal";
+import { hexValidator } from "../../helpers/validate.helper";
 
 interface ColorPickerSectionProps {
   id: string;
   label: string;
   valuePropertyName: "background" | "text";
-  defaultValue: string;
-  inputValue: string;
+  value: string;
+  setValue: (value: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const ColorPickerSection = (props: ColorPickerSectionProps) => {
+export const ColorPickerSection = ({
+  id,
+  label,
+  value,
+  setValue,
+  onChange,
+  ...props
+}: ColorPickerSectionProps) => {
   const [show, setShow] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handlePreviewClick = () => {
     setShow((prev) => !prev);
+  };
+
+  const handleDownPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") e.currentTarget.blur();
+  };
+
+  const handleBlur = () => {
+    const _value = value?.trim();
+    const isValid = hexValidator(_value);
+    const _label = label?.toLocaleLowerCase();
+
+    if (_value === "") setError(`The ${_label} field is required.`);
+    else if (_value.length !== 3 && _value.length !== 6)
+      setError(`The ${_label} field must have 3 or 6 characters`);
+    else if (_value.length === 3)
+      setValue(
+        `${_value[0]}${_value[0]}${_value[1]}${_value[1]}${_value[2]}${_value[2]}`
+      );
+    else if (!isValid) setError(`The ${_label} field is invalid.`);
   };
 
   return (
@@ -25,15 +54,31 @@ export const ColorPickerSection = (props: ColorPickerSectionProps) => {
       />
 
       <div className="relative">
-        <Input {...props} onPreviewClick={handlePreviewClick} />
+        <Input
+          id={id}
+          label={label}
+          onPreviewClick={handlePreviewClick}
+          onKeyDownCapture={handleDownPress}
+          onBlur={handleBlur}
+          onChange={onChange}
+          hasError={!!error}
+          hint={error}
+          value={value}
+          {...props}
+        />
 
         {show && (
           <div className="w-full h-[19rem] absolute grid p-5 bg-white border z-20 transition duration-300 md:max-h-fit mx-auto md:w-72 md:p-3 md:absolute md:rounded-lg md:shadow-lg md:bottom-11 md:-right-32 opacity-100">
             <ColorPickerModal propertyName={props.valuePropertyName} />
             <Input
-              id={`${props.id}-inside`}
-              valuePropertyName={props.valuePropertyName}
-              defaultValue={props.inputValue}
+              id={`${id}-inside`}
+              onKeyDownCapture={handleDownPress}
+              onBlur={handleBlur}
+              onChange={onChange}
+              hasError={!!error}
+              hint={error}
+              value={value}
+              {...props}
             />
           </div>
         )}
