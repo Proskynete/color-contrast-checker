@@ -6,8 +6,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   valuePropertyName: "background" | "text";
   onPreviewClick?: () => void;
+  previewButtonRef?: React.RefObject<HTMLDivElement>;
   hasError?: boolean;
   hint?: string | null;
+  hiddenPreview?: boolean;
 }
 
 export const Input = ({
@@ -15,9 +17,11 @@ export const Input = ({
   label,
   defaultValue,
   valuePropertyName,
+  previewButtonRef,
   onPreviewClick,
   hasError,
   hint,
+  hiddenPreview = false,
   ...props
 }: InputProps) => {
   return (
@@ -47,20 +51,23 @@ export const Input = ({
           {...props}
         />
 
-        <div
-          role="button"
-          className={`absolute top-1 right-1 border rounded-lg w-8 h-8 cursor-pointer ${
-            hasError ? "border-red-300" : "border-gray-300"
-          }`}
-          style={{
-            backgroundColor: `${
-              hasError
-                ? `#${DEFAULT_VALUES.BACKGROUND_COLOR}`
-                : `#${props.value}`
-            }`,
-          }}
-          onClick={onPreviewClick}
-        />
+        {!hiddenPreview && (
+          <div
+            ref={previewButtonRef}
+            role="button"
+            className={`absolute top-1 right-1 border rounded-lg w-8 h-8 cursor-pointer ${
+              hasError ? "border-red-300" : "border-gray-300"
+            }`}
+            style={{
+              backgroundColor: `${
+                hasError
+                  ? `#${DEFAULT_VALUES.BACKGROUND_COLOR}`
+                  : `#${props.value}`
+              }`,
+            }}
+            onClick={onPreviewClick}
+          />
+        )}
       </div>
 
       {hasError && <span className="text-xs text-red-500">{hint}</span>}

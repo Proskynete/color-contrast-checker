@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "../../components/input";
 import { ColorPickerModal } from "../../components/color-picker-modal";
 import { hexValidator } from "../../helpers/validate.helper";
@@ -22,6 +22,8 @@ export const ColorPickerSection = ({
 }: ColorPickerSectionProps) => {
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const previewButtonRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handlePreviewClick = () => {
     setShow((prev) => !prev);
@@ -46,6 +48,20 @@ export const ColorPickerSection = ({
     else if (!isValid) setError(`The ${_label} field is invalid.`);
   };
 
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        previewButtonRef.current?.contains(e.target as Node) ||
+        modalRef.current?.contains(e.target as Node)
+      )
+        return;
+      setShow(false);
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   return (
     <>
       <div
@@ -64,11 +80,15 @@ export const ColorPickerSection = ({
           hasError={!!error}
           hint={error}
           value={value}
+          previewButtonRef={previewButtonRef}
           {...props}
         />
 
         {show && (
-          <div className="w-full h-[19rem] absolute grid p-5 bg-white border z-20 transition duration-300 md:max-h-fit mx-auto md:w-72 md:p-3 md:absolute md:rounded-lg md:shadow-lg md:bottom-11 md:-right-32 opacity-100">
+          <div
+            ref={modalRef}
+            className="w-full h-[19rem] absolute grid p-5 bg-white border z-20 transition duration-300 md:max-h-fit mx-auto md:w-72 md:p-3 md:absolute md:rounded-lg md:shadow-lg md:bottom-11 md:-right-32 opacity-100"
+          >
             <ColorPickerModal propertyName={props.valuePropertyName} />
             <Input
               id={`${id}-inside`}
@@ -78,6 +98,7 @@ export const ColorPickerSection = ({
               hasError={!!error}
               hint={error}
               value={value}
+              hiddenPreview
               {...props}
             />
           </div>
