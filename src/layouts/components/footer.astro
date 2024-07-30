@@ -1,15 +1,17 @@
 ---
-
+import Typography from "../../components/typography.astro";
 ---
 
-<footer class="w-full bg-gray-800 text-gray-400 px-10">
-  <div class="my-4 md:my-6">
-    <div class="w-full flex flex-row justify-center md:justify-end">
-      <pre
-        class="text-xs font-thin flex gap-1">
-          Color Contras Checker developed by
-          <a href="https://eduardoalvarez.dev" target="_blank" rel="noopener noreferrer" class="text-white">Eduardo Álvarez</a>
-      </pre>
-    </div>
-  </div>
+<footer
+  class="w-full h-16 flex items-center justify-center md:justify-end bg-gray-800 text-gray-400 px-10"
+>
+  <Typography as="p" variant="small" class="flex items-center gap-1">
+    Color Contras Checker developed by
+    <a
+      href="https://eduardoalvarez.dev"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-white">Eduardo Álvarez</a
+    >
+  </Typography>
 </footer>
