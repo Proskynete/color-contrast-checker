@@ -3,24 +3,23 @@ import { useStore } from "@nanostores/react";
 import { backgroundStore, textStore } from "../store/values.store";
 
 interface ColorPickerModalProps {
-  valuePropertyName: "text" | "background";
+  propertyName: "background" | "text";
 }
 
-export const ColorPickerModal = ({
-  valuePropertyName,
-}: ColorPickerModalProps) => {
+export const ColorPickerModal = ({ propertyName }: ColorPickerModalProps) => {
   const $background = useStore(backgroundStore);
   const $text = useStore(textStore);
 
+  const handleChange = (color: string) => {
+    if (propertyName === "background") backgroundStore.set(color.split("#")[1]);
+    else textStore.set(color.split("#")[1]);
+  };
+
   return (
     <HexColorPicker
-      color={valuePropertyName === "background" ? $background : $text}
+      color={propertyName === "background" ? $background : $text}
       className="min-w-full md:w-auto md:h-auto md:aspect-[3/2]"
-      onChange={(color) => {
-        if (valuePropertyName === "background")
-          backgroundStore.set(color.split("#")[1]);
-        else textStore.set(color.split("#")[1]);
-      }}
+      onChange={handleChange}
     />
   );
 };
