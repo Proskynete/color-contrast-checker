@@ -1,0 +1,4 @@
+export const DEFAULT_VALUES = {
+  BACKGROUND_COLOR: "FFFFFF",
+  TEXT_COLOR: "383838",
+};
