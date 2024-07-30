@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { hexValidator } from "../helpers/validate.helper";
 import { DEFAULT_VALUES } from "../config/constants";
+import { textStore, backgroundStore } from "../store/values.store";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   previewOnClick?: () => void;
+  valuePropertyName: "background" | "text";
 }
 
 export const Input = ({
@@ -12,6 +14,7 @@ export const Input = ({
   label,
   defaultValue,
   previewOnClick,
+  valuePropertyName,
   ...props
 }: InputProps) => {
   const [value, setValue] = useState(defaultValue);
@@ -20,7 +23,12 @@ export const Input = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setError(null);
-    if (value.length <= 6) setValue(value);
+
+    if (value.length <= 6) {
+      setValue(value);
+      if (valuePropertyName === "background") backgroundStore.set(value);
+      else textStore.set(value);
+    }
   };
 
   const handleDownPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -1,7 +1,6 @@
 ---
 import { Input } from "../components/input.tsx";
 import { DEFAULT_VALUES } from "../config/constants";
-import { HEX_REGEX } from "../helpers/validate.helper";
 import LandingLayout from "../layouts/landing.layout.astro";
 import { Preview } from "./sections/preview.tsx";
 ---
@@ -14,8 +13,8 @@ import { Preview } from "./sections/preview.tsx";
           client:visible
           id="text-color"
           label="Text color"
+          valuePropertyName="text"
           defaultValue={DEFAULT_VALUES.TEXT_COLOR}
-          pattern="[A-Fa-f0-9]{6}"
         />
       </div>
 
@@ -24,12 +23,12 @@ import { Preview } from "./sections/preview.tsx";
           client:visible
           id="background-color"
           label="Background color"
+          valuePropertyName="background"
           defaultValue={DEFAULT_VALUES.BACKGROUND_COLOR}
-          pattern="[A-Fa-f0-9]{6}"
         />
       </div>
     </div>
 
-    <Preview />
+    <Preview client:visible />
   </section>
 </LandingLayout>
