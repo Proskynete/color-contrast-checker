@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { hexValidator } from "../helpers/validate.helper";
 import { DEFAULT_VALUES } from "../config/constants";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
