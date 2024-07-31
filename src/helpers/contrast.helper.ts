@@ -14,7 +14,7 @@ export const getContrastResults = ({ text, background }: ColorsToContrast) => {
   return {
     ratio,
     classification,
-    levels: [levels.largeText, levels.smallText],
+    levels: [levels.smallText, levels.largeText],
   };
 };
 
@@ -33,15 +33,15 @@ const getLevel = ({ ratio, thresholds }: GetLevel) => {
 const getAccessibilityLevels = ({ text, background }: ColorsToContrast) => {
   const ratio = contrastRatio({ text, background });
   return {
-    smallText: {
-      title: "Small Text",
-      key: TYPES.small,
-      ...getAccessibilityLevel({ ratio, type: TYPES.small }),
-    },
     largeText: {
       title: "Large Text",
       key: TYPES.large,
       ...getAccessibilityLevel({ ratio, type: TYPES.large }),
+    },
+    smallText: {
+      title: "Small Text",
+      key: TYPES.small,
+      ...getAccessibilityLevel({ ratio, type: TYPES.small }),
     },
   };
 };
