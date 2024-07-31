@@ -15,20 +15,24 @@ export const ContrastResult = () => {
     <>
       <div className="w-full flex flex-col lg:flex-row gap-0.5">
         <div
-          className={`w-full lg:w-2/3 flex flex-col justify-center text-center md:text-left p-4 rounded-xl lg:rounded-l-xl lg:rounded-r-none bg-green-600/30 text-green-900`}
+          className={`w-full lg:w-2/3 flex flex-col justify-center text-center md:text-left p-4 rounded-xl lg:rounded-l-xl lg:rounded-r-none ${classification.styles} transition-colors duration-300`}
         >
-          <p className="text-xl font-bold">
-            {classification}
-            {ratio.toFixed(2)}
-          </p>
-          <p className="text-xs">Detail</p>
+          <div className="flex flex-col">
+            <p className="text-2xl font-bold">{classification.title}</p>
+            <p className="text-sm">
+              The contrast ratio is{" "}
+              <span className="font-semibold">{ratio.toFixed(2)}</span>
+            </p>
+          </div>
         </div>
 
         <div className="w-full lg:w-1/3 flex flex-col gap-0.5">
           {levels.map((level) => (
             <div
               key={level.title}
-              className={`p-4 rounded-xl lg:rounded-l-none ${level.style} ${
+              className={`p-4 rounded-xl lg:rounded-l-none transition-colors duration-300 ${
+                level.styles
+              }  ${
                 level.key === "large"
                   ? "lg:rounded-tr-xl lg:rounded-br-none"
                   : "lg:rounded-br-xl lg:rounded-tr-none"
@@ -44,7 +48,7 @@ export const ContrastResult = () => {
       </div>
 
       <ul className="w-8/10 mt-2 ml-6 lg:ml-8 list-disc text-pretty grid gap-1">
-        <li className="text-xs text-gray-600">Sugerencias</li>
+        <li className="text-xs text-gray-600">{classification.detail}</li>
       </ul>
     </>
   );
