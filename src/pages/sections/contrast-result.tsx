@@ -19,8 +19,8 @@ export const ContrastResult = () => {
         >
           <div className="flex flex-col">
             <p className="text-2xl font-bold">{classification.title}</p>
-            <p className="text-sm">
-              The contrast ratio is{" "}
+            <p className="text-sm flex gap-1">
+              The contrast ratio is
               <span className="font-semibold">{ratio.toFixed(2)}</span>
             </p>
           </div>
@@ -47,9 +47,9 @@ export const ContrastResult = () => {
         </div>
       </div>
 
-      <ul className="w-8/10 mt-2 ml-6 lg:ml-8 list-disc text-pretty grid gap-1">
-        <li className="text-xs text-gray-600">{classification.detail}</li>
-      </ul>
+      <div className="w-8/10 mt-1 ml-2 lg:ml-3 text-pretty gap-1">
+        <p className="text-xs text-gray-600">{classification.detail}</p>
+      </div>
     </>
   );
 };
