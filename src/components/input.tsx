@@ -2,7 +2,6 @@ import { DEFAULT_VALUES } from '../config/constants';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: string;
-	valuePropertyName: 'background' | 'text';
 	onPreviewClick?: () => void;
 	previewButtonRef?: React.RefObject<HTMLDivElement>;
 	hasError?: boolean;
