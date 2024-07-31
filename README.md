@@ -51,15 +51,15 @@ This project follows the Web Content Accessibility Guidelines (WCAG).
 
 <h3 id="technologies">Technologies</h3>
 
-- [husky](https://typicode.github.io/husky)
+- [Astro](https://astro.build)
+- [react](https://reactjs.org)
+- [typescript](https://www.typescriptlang.org)
+- [tailwindcss](https://tailwindcss.com)
+- [commitlint](https://commitlint.js.org)
 - [eslint](https://eslint.org)
 - [prettier](https://prettier.io)
-- [commitlint](https://commitlint.js.org)
+- [husky](https://typicode.github.io/husky)
 - [lint-staged](https://github.com/okonet/lint-staged)
-- [react](https://reactjs.org)
-- [tailwindcss](https://tailwindcss.com/)
-- [typescript](https://www.typescriptlang.org)
-- [vite](https://vitejs.dev/)
 
 <h3 id="installation">Installation</h3>
 
@@ -81,7 +81,7 @@ cd color-contrast-checker
 pnpm install
 ```
 
-Then you need the following script to run the project in [localhost:5173](http://localhost:5173)
+Then you need the following script to run the project in [localhost:4321](http://localhost:4321)
 
 ```bash
 pnpm run dev

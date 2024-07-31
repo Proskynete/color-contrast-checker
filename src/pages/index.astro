@@ -1,0 +1,17 @@
+---
+import LandingLayout from '../layouts/landing.layout.astro';
+import { Preview } from './sections/_preview.tsx';
+import { Form } from './sections/_form.tsx';
+import { ContrastResult } from './sections/_contrast-result.tsx';
+---
+
+<LandingLayout>
+	<section class="border rounded-xl flex flex-col md:flex-row gap-5 divide-x">
+		<Form client:visible />
+		<Preview client:visible />
+	</section>
+
+	<section class="w-full lg:w-3/4 mx-auto">
+		<ContrastResult client:visible />
+	</section>
+</LandingLayout>

@@ -1,0 +1,56 @@
+---
+import Header from './components/header.astro';
+import Footer from './components/footer.astro';
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+		<meta http-equiv="x-ua-compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+		<link rel="canonical" href="https://c3.eduardoalvarez.dev" />
+		<meta name="title" content="Color Contrast Checker" />
+
+		<meta name="title" content="Color Contrast Checker" />
+		<meta name="author" content="Eduardo Álvarez Castañeda" />
+		<meta name="application-name" content="Color Contrast Checker" />
+		<meta name="image" content="/color-contrast-checker.webp" />
+
+		<meta property="og:url" content="https://c3.eduardoalvarez.dev" />
+		<meta property="og:title" content="Color Contrast Checker" />
+		<meta
+			property="og:description"
+			content="Application that allows you to contrast two colors to know whether it complies with accessibility"
+		/>
+		<meta property="og:image" content="/images/color-contrast-checker.webp" />
+
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content="https://c3.eduardoalvarez.dev" />
+		<meta property="twitter:title" content="Color Contrast Checker" />
+		<meta
+			property="twitter:description"
+			content="Application that allows you to contrast two colors to know whether it complies with accessibility"
+		/>
+		<meta property="twitter:image" content="/images/color-contrast-checker.webp" />
+
+		<meta name="generator" content={Astro.generator} />
+		<title>Color Contrast Checker</title>
+	</head>
+
+	<body class="w-screen h-screen">
+		<div class="w-full h-full grid grid-rows-[auto,1fr] overflow-x-hidden">
+			<Header />
+
+			<main class="w-full grid grid-rows-[1fr,auto] overflow-x-auto">
+				<div class="max-w-4xl lg:w-4/5 flex flex-col justify-center gap-2 mx-auto px-10 pt-10 pb-20">
+					<slot />
+				</div>
+
+				<Footer />
+			</main>
+		</div>
+	</body>
+</html>
