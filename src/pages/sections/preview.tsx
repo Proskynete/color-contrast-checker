@@ -1,4 +1,5 @@
 import { useStore } from "@nanostores/react";
+
 import { backgroundStore, textStore } from "../../store/values.store";
 
 export const Preview = () => {

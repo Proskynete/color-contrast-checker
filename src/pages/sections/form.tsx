@@ -1,6 +1,7 @@
-import { ColorPickerSection } from "./_color-picker-modal";
 import { useStore } from "@nanostores/react";
+
 import { backgroundStore, textStore } from "../../store/values.store";
+import { ColorPickerSection } from "./_color-picker-modal";
 
 export const Form = () => {
   const $background = useStore(backgroundStore);

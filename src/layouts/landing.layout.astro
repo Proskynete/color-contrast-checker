@@ -7,7 +7,7 @@ import Footer from "./components/footer.astro";
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta httpEquiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
@@ -43,13 +43,13 @@ import Footer from "./components/footer.astro";
     <title>Color Contrast Checker</title>
   </head>
 
-  <body class="w-screen h-screen">
-    <div class="w-full h-full grid grid-rows-[auto,1fr] overflow-x-hidden">
+  <body className="w-screen h-screen">
+    <div className="w-full h-full grid grid-rows-[auto,1fr] overflow-x-hidden">
       <Header />
 
-      <main class="w-full grid grid-rows-[1fr,auto] overflow-x-auto">
+      <main className="w-full grid grid-rows-[1fr,auto] overflow-x-auto">
         <div
-          class="max-w-4xl lg:w-4/5 flex flex-col justify-center gap-2 mx-auto px-10 pt-10 pb-20"
+          className="max-w-4xl lg:w-4/5 flex flex-col justify-center gap-2 mx-auto px-10 pt-10 pb-20"
         >
           <slot />
         </div>

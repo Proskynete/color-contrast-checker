@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
-import { backgroundStore, textStore } from "../../store/values.store";
+
 import { getContrastResults } from "../../helpers/contrast.helper";
+import { backgroundStore, textStore } from "../../store/values.store";
 
 export const ContrastResult = () => {
   const $background = useStore(backgroundStore);

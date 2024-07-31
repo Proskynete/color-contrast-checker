@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Input } from "../../components/input";
+
 import { ColorPickerModal } from "../../components/color-picker-modal";
+import { Input } from "../../components/input";
 import { hexValidator } from "../../helpers/validate.helper";
 
 interface ColorPickerSectionProps {
