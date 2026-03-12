@@ -24,3 +24,7 @@ pnpm-debug.log*
 
 # zsh history
 .zsh_history_project
+
+# IA
+.agents/
+.claude/
