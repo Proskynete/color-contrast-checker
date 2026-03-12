@@ -26,8 +26,15 @@ console.log(`Running ${files.length} migration(s)...\n`);
 for (const file of files) {
   const filePath = join(migrationsDir, file);
   const query = readFileSync(filePath, 'utf-8');
+  const statements = query
+    .split(';')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
   try {
-    await sql.query(query);
+    for (const statement of statements) {
+      await sql.query(statement);
+    }
     console.log(`✓ ${file}`);
   } catch (err) {
     console.error(`✗ ${file}:`, err);

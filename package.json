@@ -12,7 +12,7 @@
 		"lint": "eslint .",
 		"lint:fix": "npm run lint -- --fix",
 		"astro": "astro",
-		"db:migrate": "npx tsx src/db/migrate.ts",
+		"db:migrate": "node --env-file=.env --import tsx src/db/migrate.ts",
 		"prepare": "husky"
 	},
 	"dependencies": {
