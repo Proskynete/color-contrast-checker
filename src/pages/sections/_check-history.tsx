@@ -35,6 +35,7 @@ export const CheckHistory = ({ isSignedIn, plan }: Props) => {
 
   useEffect(() => {
     if (open && isSignedIn) fetchHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const applyCheck = (check: Check) => {

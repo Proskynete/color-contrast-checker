@@ -39,6 +39,7 @@ export const PaletteManager = ({ isSignedIn, plan }: Props) => {
 
   useEffect(() => {
     if (open && isSignedIn && isPro) fetchPalettes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const savePalette = async () => {

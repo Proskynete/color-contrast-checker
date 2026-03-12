@@ -1,33 +1,26 @@
 import type { APIRoute } from 'astro';
 
 import { sql } from '../../../db/client';
+import { getOrCreateUser } from '../../../lib/get-or-create-user';
 
-type UserRow = { id: string; plan: string };
 type PaletteRow = { id: string; name: string; colors: string; user_id: string; created_at: string };
+
+const notFound = () => new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+const serverError = () => new Response(JSON.stringify({ error: 'Could not resolve user' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 
 export const GET: APIRoute = async ({ params, locals }) => {
   const { userId: clerkId } = locals.auth();
+  if (!clerkId) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
 
-  if (!clerkId) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  const userRows = (await sql.query(`SELECT id, plan FROM users WHERE clerk_id = $1`, [clerkId])) as UserRow[];
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-  }
+  const user = await getOrCreateUser(clerkId);
+  if (!user) return serverError();
 
   const rows = (await sql.query(
     `SELECT id, name, colors, user_id, created_at FROM palettes WHERE id = $1 AND user_id = $2`,
-    [params.id, userRows[0].id],
+    [params.id, user.id],
   )) as PaletteRow[];
 
-  if (!rows.length) {
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-  }
+  if (!rows.length) return notFound();
 
   const p = rows[0];
   return new Response(
@@ -38,18 +31,10 @@ export const GET: APIRoute = async ({ params, locals }) => {
 
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   const { userId: clerkId } = locals.auth();
+  if (!clerkId) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
 
-  if (!clerkId) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  const userRows = (await sql.query(`SELECT id FROM users WHERE clerk_id = $1`, [clerkId])) as UserRow[];
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-  }
+  const user = await getOrCreateUser(clerkId);
+  if (!user) return serverError();
 
   let body: { name?: string; colors?: string[] };
   try {
@@ -59,12 +44,8 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
   }
 
   const { name, colors } = body;
+  if (!name && !colors) return new Response(JSON.stringify({ error: 'Nothing to update' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
 
-  if (!name && !colors) {
-    return new Response(JSON.stringify({ error: 'Nothing to update' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-  }
-
-  // Build partial update
   const updates: string[] = [];
   const values: unknown[] = [];
   let idx = 1;
@@ -72,16 +53,14 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
   if (name) { updates.push(`name = $${idx++}`); values.push(name); }
   if (colors) { updates.push(`colors = $${idx++}`); values.push(JSON.stringify(colors)); }
 
-  values.push(params.id, userRows[0].id);
+  values.push(params.id, user.id);
 
   const rows = (await sql.query(
     `UPDATE palettes SET ${updates.join(', ')} WHERE id = $${idx++} AND user_id = $${idx} RETURNING id, name, colors, created_at`,
     values,
   )) as PaletteRow[];
 
-  if (!rows.length) {
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-  }
+  if (!rows.length) return notFound();
 
   const p = rows[0];
   return new Response(
@@ -92,27 +71,17 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 
 export const DELETE: APIRoute = async ({ params, locals }) => {
   const { userId: clerkId } = locals.auth();
+  if (!clerkId) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
 
-  if (!clerkId) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  const userRows = (await sql.query(`SELECT id FROM users WHERE clerk_id = $1`, [clerkId])) as UserRow[];
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-  }
+  const user = await getOrCreateUser(clerkId);
+  if (!user) return serverError();
 
   const rows = (await sql.query(
     `DELETE FROM palettes WHERE id = $1 AND user_id = $2 RETURNING id`,
-    [params.id, userRows[0].id],
+    [params.id, user.id],
   )) as { id: string }[];
 
-  if (!rows.length) {
-    return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-  }
+  if (!rows.length) return notFound();
 
   return new Response(null, { status: 204 });
 };

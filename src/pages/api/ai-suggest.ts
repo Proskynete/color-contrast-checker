@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import OpenAI from 'openai';
 
 import { sql } from '../../db/client';
+import { getOrCreateUser } from '../../lib/get-or-create-user';
 
 // Calculate relative luminance from hex color
 function hexToRgb(hex: string): [number, number, number] {
@@ -89,20 +90,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  // Load user and check plan/credits
-  const userRows = (await sql.query(
-    `SELECT id, plan, ai_credits_used, ai_credits_reset_at FROM users WHERE clerk_id = $1`,
-    [clerkId],
-  )) as { id: string; plan: string; ai_credits_used: number; ai_credits_reset_at: string | null }[];
+  // Load user (create lazily if not synced via webhook yet)
+  const user = await getOrCreateUser(clerkId);
 
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), {
-      status: 404,
+  if (!user) {
+    return new Response(JSON.stringify({ error: 'Could not resolve user. Please try again.' }), {
+      status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
-  const user = userRows[0];
 
   // Free plan: 3 credits/month, lazy UTC reset
   if (user.plan === 'free') {

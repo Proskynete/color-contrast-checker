@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 
 import { sql } from '../../../db/client';
+import { getOrCreateUser } from '../../../lib/get-or-create-user';
 
-type UserRow = { id: string; plan: string };
 type PaletteRow = { id: string; name: string; colors: string; created_at: string };
 
 const PALETTE_LIMIT: Record<string, number> = { free: 0, pro: 10, teams: 999 };
@@ -17,16 +17,14 @@ export const GET: APIRoute = async ({ locals }) => {
     });
   }
 
-  const userRows = (await sql.query(`SELECT id, plan FROM users WHERE clerk_id = $1`, [clerkId])) as UserRow[];
+  const user = await getOrCreateUser(clerkId);
 
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), {
-      status: 404,
+  if (!user) {
+    return new Response(JSON.stringify({ error: 'Could not resolve user' }), {
+      status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
-  const user = userRows[0];
 
   if (PALETTE_LIMIT[user.plan] === 0) {
     return new Response(JSON.stringify({ palettes: [], plan: user.plan }), {
@@ -64,16 +62,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const userRows = (await sql.query(`SELECT id, plan FROM users WHERE clerk_id = $1`, [clerkId])) as UserRow[];
+  const user = await getOrCreateUser(clerkId);
 
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), {
-      status: 404,
+  if (!user) {
+    return new Response(JSON.stringify({ error: 'Could not resolve user' }), {
+      status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
-  const user = userRows[0];
   const limit = PALETTE_LIMIT[user.plan] ?? 0;
 
   if (limit === 0) {

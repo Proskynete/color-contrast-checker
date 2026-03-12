@@ -2,8 +2,8 @@ import type { APIRoute } from 'astro';
 import { nanoid } from 'nanoid';
 
 import { sql } from '../../../db/client';
+import { getOrCreateUser } from '../../../lib/get-or-create-user';
 
-type UserRow = { id: string; plan: string };
 type CheckRow = { id: string; share_token: string | null };
 type HistoryRow = {
   id: string;
@@ -55,19 +55,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const userRows = (await sql.query(
-    `SELECT id, plan FROM users WHERE clerk_id = $1`,
-    [clerkId],
-  )) as UserRow[];
+  const user = await getOrCreateUser(clerkId);
 
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), {
-      status: 404,
+  if (!user) {
+    return new Response(JSON.stringify({ error: 'Could not resolve user' }), {
+      status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
-  const user = userRows[0];
 
   // Share token: free users get 7-day expiry, pro/teams get permanent
   let shareToken: string | null = null;
@@ -111,19 +106,14 @@ export const GET: APIRoute = async ({ url, locals }) => {
     });
   }
 
-  const userRows = (await sql.query(
-    `SELECT id, plan FROM users WHERE clerk_id = $1`,
-    [clerkId],
-  )) as UserRow[];
+  const user = await getOrCreateUser(clerkId);
 
-  if (!userRows.length) {
-    return new Response(JSON.stringify({ error: 'User not found' }), {
-      status: 404,
+  if (!user) {
+    return new Response(JSON.stringify({ error: 'Could not resolve user' }), {
+      status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
-  const user = userRows[0];
 
   // History window: free = 0 (no history), pro = 90 days, teams = 365 days
   const historyDays: Record<string, number> = { free: 0, pro: 90, teams: 365 };
