@@ -12,6 +12,7 @@
 		"lint": "eslint .",
 		"lint:fix": "npm run lint -- --fix",
 		"astro": "astro",
+		"db:migrate": "npx tsx src/db/migrate.ts",
 		"prepare": "husky"
 	},
 	"dependencies": {
@@ -20,6 +21,7 @@
 		"@astrojs/react": "^3.6.0",
 		"@astrojs/tailwind": "5.1.0",
 		"@nanostores/react": "^0.7.2",
+		"@neondatabase/serverless": "^1.0.2",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
 		"astro": "4.12.2",
@@ -44,7 +46,8 @@
 		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"husky": "^9.1.4",
 		"lint-staged": "^15.2.7",
-		"prettier": "^3.3.3"
+		"prettier": "^3.3.3",
+		"tsx": "^4.21.0"
 	},
 	"author": {
 		"name": "Eduardo Esteban Álvarez Castañeda",
