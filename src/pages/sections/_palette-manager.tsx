@@ -1,3 +1,4 @@
+import { useStore } from '@nanostores/react';
 import { useEffect, useState } from 'react';
 
 import { backgroundStore, textStore } from '../../store/values.store';
@@ -12,11 +13,11 @@ type Palette = {
 type Props = {
   isSignedIn: boolean;
   plan: string;
-  currentText: string;
-  currentBg: string;
 };
 
-export const PaletteManager = ({ isSignedIn, plan, currentText, currentBg }: Props) => {
+export const PaletteManager = ({ isSignedIn, plan }: Props) => {
+  const currentText = useStore(textStore);
+  const currentBg = useStore(backgroundStore);
   const [palettes, setPalettes] = useState<Palette[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

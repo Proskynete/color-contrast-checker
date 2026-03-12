@@ -38,20 +38,18 @@ if (clerkId) {
 		<ContrastResult client:visible />
 
 		<AiSuggest
-			client:visible
+			client:load
 			isSignedIn={isSignedIn}
 			plan={plan}
 			creditsUsed={creditsUsed}
 		/>
 
 		<div class="flex items-center gap-4 justify-end">
-			<CheckHistory client:visible isSignedIn={isSignedIn} plan={plan} />
+			<CheckHistory client:load isSignedIn={isSignedIn} plan={plan} />
 			<PaletteManager
-				client:visible
+				client:load
 				isSignedIn={isSignedIn}
 				plan={plan}
-				currentText=""
-				currentBg=""
 			/>
 		</div>
 	</section>
