@@ -1,3 +1,4 @@
+import clerk from '@clerk/astro';
 import node from '@astrojs/node';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
@@ -7,5 +8,5 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
 	output: 'server',
 	adapter: node({ mode: 'standalone' }),
-	integrations: [tailwind(), react()],
+	integrations: [clerk(), tailwind(), react()],
 });
