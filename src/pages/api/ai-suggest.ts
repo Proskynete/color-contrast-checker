@@ -167,7 +167,25 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const adjustColor = colorToAdjust === 'text' ? textColor : bgColor;
   const fixedColor = colorToAdjust === 'text' ? bgColor : textColor;
 
-  // Try OpenAI first, fallback to algorithmic
+  // Helper: compute ratio for a candidate given which color is being adjusted
+  const computeRatio = (candidate: string) =>
+    colorToAdjust === 'text'
+      ? contrastRatio(candidate, bgColor)
+      : contrastRatio(textColor, candidate);
+
+  // Helper: guarantee a candidate meets targetRatio — if not, algorithmically push it
+  const enforce = (candidate: string, targetRatio: number): string => {
+    if (computeRatio(candidate) >= targetRatio) return candidate;
+    return algorithmicFallback(candidate, fixedColor, targetRatio);
+  };
+
+  const makeSuggestion = (label: string, color: string, targetRatio: number) => {
+    const guaranteed = enforce(color, targetRatio);
+    const ratio = computeRatio(guaranteed);
+    const wcagLevel = ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : ratio >= 3 ? 'A' : 'fail';
+    return { label, color: guaranteed, ratio, wcagLevel, adjusts: colorToAdjust };
+  };
+
   let suggestions: { label: string; color: string; ratio: number; wcagLevel: string; adjusts: string }[] = [];
 
   try {
@@ -176,58 +194,46 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const openai = new OpenAI({ apiKey });
 
-    const prompt = `You are a color accessibility expert. Given two colors that fail WCAG contrast requirements, suggest improved hex colors.
+    const prompt = `You are a color accessibility expert. Suggest hex color variants that are visually similar to the original but with adjusted lightness/darkness to improve WCAG contrast.
 
-Current colors:
-- Text color: ${textColor}
-- Background color: ${bgColor}
-- Current contrast ratio: ${currentRatio}:1
+Original color to adjust: ${adjustColor} (${colorToAdjust} color)
+Fixed color: ${fixedColor}
+Current contrast ratio: ${currentRatio}:1
 
-Adjust only the ${colorToAdjust} color (${adjustColor}) to improve contrast while keeping it visually similar.
-The other color stays fixed at ${fixedColor}.
-
-Provide exactly 3 suggestions as JSON array:
-1. AA compliant (minimum ratio 4.5:1 for normal text)
-2. AAA compliant (minimum ratio 7:1)
-3. Balanced (best ratio while staying closest to original color)
-
-Response format (JSON only, no markdown):
+Respond with JSON only (no markdown), 3 variants of the original color with different lightness levels:
 [
   {"label": "AA", "color": "#hexcode"},
   {"label": "AAA", "color": "#hexcode"},
   {"label": "Balanced", "color": "#hexcode"}
-]`;
+]
+Keep the same hue and saturation, only adjust lightness. AA should be slightly adjusted, AAA more aggressively, Balanced minimally.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 200,
+      temperature: 0.2,
+      max_tokens: 150,
     });
 
     const raw = response.choices[0]?.message?.content?.trim() ?? '';
     const parsed = JSON.parse(raw) as { label: string; color: string }[];
 
+    // Use OpenAI's hue/saturation as a base, then enforce ratio mathematically
+    const targets: Record<string, number> = { AA: 4.5, AAA: 7, Balanced: 4.5 };
+
     suggestions = parsed
       .filter((s) => /^#[0-9a-fA-F]{6}$/.test(s.color))
-      .map((s) => {
-        const ratio = contrastRatio(
-          colorToAdjust === 'text' ? s.color : textColor,
-          colorToAdjust === 'bg' ? s.color : bgColor,
-        );
-        const wcagLevel = ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : ratio >= 3 ? 'A' : 'fail';
-        return { label: s.label, color: s.color, ratio, wcagLevel, adjusts: colorToAdjust };
-      });
+      .map((s) => makeSuggestion(s.label, s.color, targets[s.label] ?? 4.5));
   } catch {
-    // Algorithmic fallback
-    const aa = algorithmicFallback(adjustColor, fixedColor, 4.5);
-    const aaa = algorithmicFallback(adjustColor, fixedColor, 7);
-    const balanced = algorithmicFallback(adjustColor, fixedColor, 4.5);
+    // Pure algorithmic fallback
+  }
 
+  // If OpenAI failed or returned nothing, use algorithmic
+  if (suggestions.length === 0) {
     suggestions = [
-      { label: 'AA', color: aa, ratio: contrastRatio(colorToAdjust === 'text' ? aa : textColor, colorToAdjust === 'bg' ? aa : bgColor), wcagLevel: 'AA', adjusts: colorToAdjust },
-      { label: 'AAA', color: aaa, ratio: contrastRatio(colorToAdjust === 'text' ? aaa : textColor, colorToAdjust === 'bg' ? aaa : bgColor), wcagLevel: 'AAA', adjusts: colorToAdjust },
-      { label: 'Balanced', color: balanced, ratio: contrastRatio(colorToAdjust === 'text' ? balanced : textColor, colorToAdjust === 'bg' ? balanced : bgColor), wcagLevel: 'AA', adjusts: colorToAdjust },
+      makeSuggestion('Balanced', algorithmicFallback(adjustColor, fixedColor, 4.5), 4.5),
+      makeSuggestion('AA', algorithmicFallback(adjustColor, fixedColor, 4.5), 4.5),
+      makeSuggestion('AAA', algorithmicFallback(adjustColor, fixedColor, 7), 7),
     ];
   }
 
