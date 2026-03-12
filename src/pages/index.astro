@@ -1,8 +1,31 @@
 ---
 import LandingLayout from '../layouts/landing.layout.astro';
-import { Preview } from './sections/_preview.tsx';
-import { Form } from './sections/_form.tsx';
+import { AiSuggest } from './sections/_ai-suggest.tsx';
+import { CheckHistory } from './sections/_check-history.tsx';
 import { ContrastResult } from './sections/_contrast-result.tsx';
+import { Form } from './sections/_form.tsx';
+import { PaletteManager } from './sections/_palette-manager.tsx';
+import { Preview } from './sections/_preview.tsx';
+import { sql } from '../db/client';
+
+const { userId: clerkId } = Astro.locals.auth();
+
+let isSignedIn = false;
+let plan = 'free';
+let creditsUsed = 0;
+
+if (clerkId) {
+	isSignedIn = true;
+	const rows = await sql.query(
+		`SELECT plan, ai_credits_used FROM users WHERE clerk_id = $1`,
+		[clerkId],
+	) as { plan: string; ai_credits_used: number }[];
+
+	if (rows.length) {
+		plan = rows[0].plan;
+		creditsUsed = rows[0].ai_credits_used;
+	}
+}
 ---
 
 <LandingLayout>
@@ -11,7 +34,25 @@ import { ContrastResult } from './sections/_contrast-result.tsx';
 		<Preview client:visible />
 	</section>
 
-	<section class="w-full lg:w-3/4 mx-auto">
+	<section class="w-full lg:w-3/4 mx-auto flex flex-col gap-4">
 		<ContrastResult client:visible />
+
+		<AiSuggest
+			client:visible
+			isSignedIn={isSignedIn}
+			plan={plan}
+			creditsUsed={creditsUsed}
+		/>
+
+		<div class="flex items-center gap-4 justify-end">
+			<CheckHistory client:visible isSignedIn={isSignedIn} plan={plan} />
+			<PaletteManager
+				client:visible
+				isSignedIn={isSignedIn}
+				plan={plan}
+				currentText=""
+				currentBg=""
+			/>
+		</div>
 	</section>
 </LandingLayout>
