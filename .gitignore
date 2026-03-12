@@ -28,3 +28,5 @@ pnpm-debug.log*
 # IA
 .agents/
 .claude/
+# clerk configuration (can include secrets)
+/.clerk/

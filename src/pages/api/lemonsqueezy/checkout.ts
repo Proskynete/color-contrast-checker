@@ -1,7 +1,8 @@
+import { createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
 import type { APIRoute } from 'astro';
 
 import { sql } from '../../../db/client';
-import { stripe } from '../../../lib/stripe';
+import { setupLemonSqueezy } from '../../../lib/lemonsqueezy';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   const { userId: clerkId } = locals.auth();
@@ -13,7 +14,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  let body: { priceId: string; successUrl: string; cancelUrl: string };
+  let body: { variantId: string; redirectUrl: string };
   try {
     body = await request.json();
   } catch {
@@ -23,19 +24,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const { priceId, successUrl, cancelUrl } = body;
+  const { variantId, redirectUrl } = body;
 
-  if (!priceId || !successUrl || !cancelUrl) {
+  if (!variantId || !redirectUrl) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  const userRows = (await sql.query(
-    `SELECT id, email, stripe_customer_id FROM users WHERE clerk_id = $1`,
-    [clerkId],
-  )) as { id: string; email: string; stripe_customer_id: string | null }[];
+  const userRows = (await sql.query(`SELECT id, email FROM users WHERE clerk_id = $1`, [clerkId])) as {
+    id: string;
+    email: string;
+  }[];
 
   if (!userRows.length) {
     return new Response(JSON.stringify({ error: 'User not found' }), {
@@ -46,23 +47,28 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const user = userRows[0];
 
-  // Create or reuse Stripe customer
-  let customerId = user.stripe_customer_id;
-  if (!customerId) {
-    const customer = await stripe.customers.create({ email: user.email });
-    customerId = customer.id;
-    await sql.query(`UPDATE users SET stripe_customer_id = $1 WHERE id = $2`, [customerId, user.id]);
-  }
+  setupLemonSqueezy();
 
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    mode: 'subscription',
-    success_url: successUrl,
-    cancel_url: cancelUrl,
+  const storeId = import.meta.env.LEMONSQUEEZY_STORE_ID;
+
+  const { data, error } = await createCheckout(storeId, variantId, {
+    checkoutData: {
+      email: user.email,
+      custom: { user_id: user.id },
+    },
+    productOptions: {
+      redirectUrl,
+    },
   });
 
-  return new Response(JSON.stringify({ url: session.url }), {
+  if (error || !data) {
+    return new Response(JSON.stringify({ error: 'Failed to create checkout' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  return new Response(JSON.stringify({ url: data.data.attributes.url }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   });
