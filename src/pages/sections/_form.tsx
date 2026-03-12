@@ -39,7 +39,7 @@ export const Form = () => {
 					label="Background color"
 					fieldName="background"
 					value={$background}
-					setValue={handleSetValue('text')}
+					setValue={handleSetValue('background')}
 					onChange={handleChange('background')}
 				/>
 			</div>
