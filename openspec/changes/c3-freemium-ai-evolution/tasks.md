@@ -125,21 +125,21 @@
 
 ## 12. Bulk Checker (Phase 3)
 
-- [ ] 12.1 Build CSV upload component — accepts file, parses `text_color,bg_color` rows, handles invalid hex gracefully
-- [ ] 12.2 Implement client-side bulk contrast calculation for all rows using existing `contrastRatio` utility
-- [ ] 12.3 Build bulk results table UI — paginated at 50 rows, color swatches, ratio, WCAG level badges (color-coded pass/fail)
-- [ ] 12.4 Gate bulk checker behind Teams plan with upsell prompt for Free/Pro users
+- [x] 12.1 Build CSV upload component — accepts file, parses `text_color,bg_color` rows, handles invalid hex gracefully
+- [x] 12.2 Implement client-side bulk contrast calculation for all rows using existing `contrastRatio` utility
+- [x] 12.3 Build bulk results table UI — paginated at 50 rows, color swatches, ratio, WCAG level badges (color-coded pass/fail)
+- [x] 12.4 Gate bulk checker behind Teams plan with upsell prompt for Free/Pro users
 
 ## 13. PDF Reports (Phase 3)
 
-- [ ] 13.1 Install `jspdf` and `jspdf-autotable` for client-side PDF generation
-- [ ] 13.2 Implement PDF export function — generates report with title, date, summary stats, and results table
-- [ ] 13.3 Add "Export PDF" button to check history view (Teams only — upsell otherwise)
-- [ ] 13.4 Add "Export PDF" button to bulk checker results view (Teams only)
+- [x] 13.1 Install `jspdf` and `jspdf-autotable` for client-side PDF generation
+- [x] 13.2 Implement PDF export function — generates report with title, date, summary stats, and results table
+- [x] 13.3 Add "Export PDF" button to check history view (Teams only — upsell otherwise)
+- [x] 13.4 Add "Export PDF" button to bulk checker results view (Teams only)
 
 ## 14. AI Palette Generation V2 (Phase 3)
 
-- [ ] 14.1 Design prompt for full accessible palette generation from a single brand color (primary, secondary, backgrounds, text, states — all with WCAG ratios)
-- [ ] 14.2 Create `POST /api/ai-palette` endpoint using OpenAI GPT-4o-mini
-- [ ] 14.3 Build palette generation UI — input brand color, display generated palette with ratio annotations
-- [ ] 14.4 Allow saving generated palette directly to team brand palettes
+- [x] 14.1 Design prompt for full accessible palette generation from a single brand color (primary, secondary, backgrounds, text, states — all with WCAG ratios)
+- [x] 14.2 Create `POST /api/ai-palette` endpoint using OpenAI GPT-4o-mini
+- [x] 14.3 Build palette generation UI — input brand color, display generated palette with ratio annotations
+- [x] 14.4 Allow saving generated palette directly to team brand palettes

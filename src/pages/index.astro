@@ -1,6 +1,8 @@
 ---
 import LandingLayout from '../layouts/landing.layout.astro';
+import { AiPalette } from './sections/_ai-palette.tsx';
 import { AiSuggest } from './sections/_ai-suggest.tsx';
+import { BulkChecker } from './sections/_bulk-checker.tsx';
 import { CheckHistory } from './sections/_check-history.tsx';
 import { ContrastResult } from './sections/_contrast-result.tsx';
 import { Form } from './sections/_form.tsx';
@@ -81,9 +83,18 @@ if (clerkId) {
 		</div>
 	</div>
 
-	<!-- History + Palette + Team row -->
-	<div class="flex items-center gap-3 justify-end">
+	<!-- History + Palette + Bulk + AI Palette + Team row -->
+	<div class="flex items-center gap-3 justify-end flex-wrap">
 		<CheckHistory client:load isSignedIn={isSignedIn} plan={plan} />
+		<BulkChecker client:load isSignedIn={isSignedIn} plan={plan} />
+		<AiPalette
+			client:load
+			isSignedIn={isSignedIn}
+			plan={plan}
+			teamId={teamId}
+			teamRole={teamRole}
+			teamStatus={teamStatus}
+		/>
 		<PaletteManager
 			client:load
 			isSignedIn={isSignedIn}

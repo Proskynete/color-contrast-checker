@@ -21,6 +21,7 @@ export const CheckHistory = ({ isSignedIn, plan }: Props) => {
   const [checks, setChecks] = useState<Check[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isTeams = plan === 'teams';
 
   const fetchHistory = async () => {
     setLoading(true);
@@ -44,6 +45,37 @@ export const CheckHistory = ({ isSignedIn, plan }: Props) => {
     setOpen(false);
   };
 
+  const handleExportPDF = async () => {
+    const { jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const doc = new jsPDF();
+    const now = new Date().toLocaleDateString('en-US', { dateStyle: 'long' });
+
+    doc.setFontSize(16);
+    doc.text('Check History Report', 14, 16);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${now} · ${checks.length} checks`, 14, 24);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [['Text Color', 'Background', 'Ratio', 'WCAG Level', 'AI', 'Date']],
+      body: checks.map((c) => [
+        c.textColor,
+        c.bgColor,
+        `${c.ratio.toFixed(2)}:1`,
+        c.wcagLevel,
+        c.aiAssisted ? 'Yes' : 'No',
+        new Date(c.createdAt).toLocaleDateString(),
+      ]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [17, 24, 39] },
+    });
+
+    doc.save(`check-history-${Date.now()}.pdf`);
+  };
+
   if (!isSignedIn) return null;
   if (plan === 'free') return null;
 
@@ -61,7 +93,17 @@ export const CheckHistory = ({ isSignedIn, plan }: Props) => {
           <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <p className="font-semibold text-gray-800">Check History</p>
-              <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+              <div className="flex items-center gap-2">
+                {isTeams && checks.length > 0 && (
+                  <button
+                    onClick={handleExportPDF}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-[#111827] text-white hover:bg-[#1f2937] transition-colors"
+                  >
+                    Export PDF
+                  </button>
+                )}
+                <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+              </div>
             </div>
 
             <div className="overflow-y-auto max-h-96">
