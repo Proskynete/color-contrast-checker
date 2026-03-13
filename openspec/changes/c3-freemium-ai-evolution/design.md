@@ -4,6 +4,8 @@ C3 is currently a fully static Astro site with no backend, no auth, and no persi
 
 The change introduces a server layer, a relational database, third-party auth, AI inference, and payment processing — all while keeping the existing checker UI intact as the free tier entry point.
 
+**Implementation status (as of 2026-03-13):** Phases 1–9 are complete and deployed to Vercel. Phases 10–13 (team collaboration, bulk checker, PDF reports, AI palette V2) are pending Phase 3. Key provider changes made during implementation: billing migrated from Stripe to Lemon Squeezy; AI migrated from Claude Haiku to OpenAI GPT-4o-mini. Major UI redesign shipped post-merge (asymmetric grid, tools panel, daltonism simulation).
+
 ## Goals / Non-Goals
 
 **Goals:**
@@ -48,13 +50,23 @@ The change introduces a server layer, a relational database, third-party auth, A
 
 **Alternative considered:** Separate Node.js API on Railway/Render — rejected because it adds deployment complexity and cost with no benefit at this scale.
 
-### D4: Claude Haiku for AI suggestions
+### D4: OpenAI GPT-4o-mini for AI suggestions
 
-**Decision:** Use `claude-haiku-4-5-20251001` for the AI color correction endpoint.
+**Decision:** Use `gpt-4o-mini` (OpenAI) for the AI color correction endpoint.
 
-**Rationale:** Haiku is the fastest and cheapest Claude model (~$0.001/request), with latency under 2 seconds — acceptable for an interactive UI feature. The task (suggest 3 color hex values with constraints) is simple enough that Haiku's capability is sufficient; Sonnet would add cost and latency without meaningful quality improvement.
+**Rationale:** Originally specified as Claude Haiku (`claude-haiku-4-5-20251001`), but changed to OpenAI GPT-4o-mini during implementation. GPT-4o-mini is comparable in speed and cost to Haiku (~$0.001/request), supports structured JSON output natively, and the task (suggest 3 color hex values with constraints) is simple enough that capability differences between models are negligible.
 
-**Critical safeguard:** Claude's output is never trusted directly. The server recalculates the contrast ratio for every suggested hex value mathematically. Suggestions that don't meet their stated WCAG target are discarded. If all suggestions fail, an algorithmic HSL-based fallback runs instead. This means the feature works even when Claude returns wrong values or is unavailable.
+**Critical safeguard:** OpenAI's output is never trusted directly. The server recalculates the contrast ratio for every suggested hex value mathematically. Suggestions that don't meet their stated WCAG target are discarded. If all suggestions fail, an algorithmic HSL-based fallback runs instead. This means the feature works even when the model returns wrong values or is unavailable.
+
+**Alternative considered:** Claude Haiku — originally specified but replaced in favor of OpenAI's ecosystem to consolidate with the existing OpenAI SDK dependency.
+
+### D4b: Lemon Squeezy over Stripe for billing
+
+**Decision:** Use Lemon Squeezy as the payment processor.
+
+**Rationale:** Originally specified as Stripe, but replaced during implementation. Lemon Squeezy acts as a Merchant of Record (handles VAT/taxes automatically), has a simpler API surface for checkout sessions and webhooks, and reduces compliance overhead at early stage. The migration required a new DB column (`lemonsqueezy_customer_id`, `lemonsqueezy_subscription_id`) in place of `stripe_customer_id`, reflected in migration `007_users_lemonsqueezy.sql`.
+
+**Alternative considered:** Stripe — originally specified but replaced due to Lemon Squeezy's simpler onboarding and built-in tax handling.
 
 ### D5: Lazy credit reset over a cron job
 
@@ -67,6 +79,14 @@ The change introduces a server layer, a relational database, third-party auth, A
 **Decision:** Store AI rate limit state in a Neon table (`ai_rate_limits`) rather than Redis.
 
 **Rationale:** At early-stage traffic, a Postgres upsert per UTC hour per user is fast enough and avoids adding another service dependency. The table approach also persists across serverless function cold starts, which an in-memory solution would not. If traffic scales to where DB-based rate limiting becomes a bottleneck, migrating to Upstash Redis is a one-file change.
+
+### D7: Astro v5 + Vercel adapter over Astro v6 + Node adapter
+
+**Decision:** Deploy on Astro v5 with `@astrojs/vercel` adapter.
+
+**Originally specified:** `@astrojs/node` adapter with Astro v6.
+
+**Rationale:** Astro v6 produced a `before-hydration` 404 error in Vercel's build pipeline (incompatibility with Vercel adapter v10 and Node 22). Downgrading to Astro v5 + Vercel adapter v8 resolved the issue. Added `.npmrc` with `legacy-peer-deps` for peer dependency resolution on Vercel CI. Static asset paths were explicitly set to `_astro` to fix static file 404s.
 
 ## Risks / Trade-offs
 
@@ -100,6 +120,8 @@ The change introduces a server layer, a relational database, third-party auth, A
 
 ## Open Questions
 
-- Should the `/share/[token]` page render as a full interactive checker or a read-only card? *(Decision: read-only card with "Try it yourself" link — simpler and avoids anonymous users bypassing auth gate via shared links)*
-- Should PNG export be client-side (html2canvas) or server-side? *(Decision: client-side — no server dependency, sufficient quality for the use case)*
-- Should anonymous (unauthenticated) checks ever be saved? *(Decision: no — checks are only persisted for authenticated users)*
+- Should the `/share/[token]` page render as a full interactive checker or a read-only card? *(Decision: read-only card with "Try it yourself" link — simpler and avoids anonymous users bypassing auth gate via shared links)* ✅
+- Should PNG export be client-side (html2canvas) or server-side? *(Decision: client-side — no server dependency, sufficient quality for the use case)* ✅
+- Should anonymous (unauthenticated) checks ever be saved? *(Decision: no — checks are only persisted for authenticated users)* ✅
+- Should billing use Stripe or Lemon Squeezy? *(Decision: Lemon Squeezy — simpler MoR model, built-in tax handling, easier early-stage onboarding)* ✅
+- Should AI use Claude Haiku or OpenAI GPT-4o-mini? *(Decision: OpenAI GPT-4o-mini — consolidated dependency, native JSON output, comparable cost/latency)* ✅
