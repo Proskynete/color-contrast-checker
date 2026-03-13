@@ -54,12 +54,12 @@ function useCopy() {
 // ─── TAB 1: Paleta ──────────────────────────────────────────────────────────
 
 const HARMONY_TYPES: { key: PaletteType; label: string }[] = [
-  { key: 'complementarios', label: 'Complementarios' },
-  { key: 'analogos', label: 'Análogos' },
-  { key: 'triadico', label: 'Triádico' },
-  { key: 'complementarios-divididos', label: 'Comp. divididos' },
-  { key: 'tetradico', label: 'Tetrádico' },
-  { key: 'monocromatico', label: 'Monocromático' },
+  { key: 'complementarios', label: 'Complementary' },
+  { key: 'analogos', label: 'Analogous' },
+  { key: 'triadico', label: 'Triadic' },
+  { key: 'complementarios-divididos', label: 'Split Comp.' },
+  { key: 'tetradico', label: 'Tetradic' },
+  { key: 'monocromatico', label: 'Monochromatic' },
 ];
 
 function TabPaleta() {
@@ -75,7 +75,7 @@ function TabPaleta() {
   return (
     <div>
       {/* Harmony type buttons */}
-      <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Armonía</p>
+      <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Harmony</p>
       <div className="flex flex-wrap gap-1.5 mb-4">
         {HARMONY_TYPES.map(({ key, label }) => (
           <button
@@ -105,7 +105,7 @@ function TabPaleta() {
               setTooltip({ hex, x: rect.left + rect.width / 2, y: rect.top });
             }}
             onMouseLeave={() => setTooltip(null)}
-            title={`Click para usar #${hex.toUpperCase()}`}
+            title={`Click to use #${hex.toUpperCase()}`}
           />
         ))}
         {tooltip && (
@@ -113,13 +113,13 @@ function TabPaleta() {
             className="fixed z-50 pointer-events-none bg-[#111827] text-white text-xs px-2 py-1 rounded shadow-lg -translate-x-1/2 -translate-y-full -mt-1"
             style={{ left: tooltip.x, top: tooltip.y }}
           >
-            Click para usar #{tooltip.hex.toUpperCase()}
+            Click to use #{tooltip.hex.toUpperCase()}
           </div>
         )}
       </div>
 
       {/* Small swatches row with details */}
-      <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Colores</p>
+      <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Colors</p>
       <div className="flex flex-col gap-1.5">
         {palette.map((hex, i) => {
           const ratio = contrastRatio({ text: `#${hex}`, background: `#${$background}` });
@@ -137,7 +137,7 @@ function TabPaleta() {
               <button
                 onClick={() => copy(`#${hex.toUpperCase()}`)}
                 className="text-[#9CA3AF] hover:text-[#374151] transition-colors"
-                title="Copiar hex"
+                title="Copy hex"
               >
                 {copied === `#${hex.toUpperCase()}` ? <CheckIcon /> : <CopyIcon />}
               </button>
@@ -164,11 +164,11 @@ function TabMulti() {
   const handleAdd = () => {
     const parsed = parseColorInput(inputValue);
     if (!parsed) {
-      setError('Color inválido. Usa #HEX, rgb(r,g,b) o hsl(h,s%,l%)');
+      setError('Invalid color. Use #HEX, rgb(r,g,b) or hsl(h,s%,l%)');
       return;
     }
     if (backgrounds.includes(parsed)) {
-      setError('Este color ya está en la lista');
+      setError('This color is already in the list');
       return;
     }
     setBackgrounds(prev => [...prev, parsed]);
@@ -193,7 +193,7 @@ function TabMulti() {
           value={inputValue}
           onChange={(e) => { setInputValue(e.target.value); setError(''); }}
           onKeyDown={handleKeyDown}
-          placeholder="Agregar fondo (#HEX, rgb, hsl)"
+          placeholder="Add background (#HEX, rgb, hsl)"
           className="flex-1 text-xs border border-[#E5E7EB] rounded-lg px-3 py-2 text-[#374151] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#374151] focus:border-transparent"
         />
         <button
@@ -206,7 +206,7 @@ function TabMulti() {
       {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
 
       {backgrounds.length === 0 ? (
-        <p className="text-xs text-[#9CA3AF] text-center py-8">Agrega fondos para comparar el color de texto actual.</p>
+        <p className="text-xs text-[#9CA3AF] text-center py-8">Add backgrounds to compare against the current text color.</p>
       ) : (
         <div className="flex flex-col gap-2">
           {backgrounds.map((bg) => {
@@ -218,7 +218,7 @@ function TabMulti() {
                   className="flex items-center justify-center rounded px-2 py-1 text-xs font-semibold flex-shrink-0 min-w-[90px]"
                   style={{ backgroundColor: `#${bg}`, color: `#${$text}` }}
                 >
-                  Texto de ejemplo Aa
+                  Sample text Aa
                 </div>
                 {/* Hex + copy */}
                 <div className="flex items-center gap-1 flex-1 min-w-0">
@@ -283,7 +283,7 @@ function TabGrad() {
       {/* Inputs */}
       <div className="flex gap-2 mb-4">
         <div className="flex-1">
-          <label className="text-xs text-[#6B7280] mb-1 block">Inicio</label>
+          <label className="text-xs text-[#6B7280] mb-1 block">Start</label>
           <div className="flex items-center gap-1.5 border border-[#E5E7EB] rounded-lg px-2 py-1.5">
             <div className="w-5 h-5 rounded border border-[#E5E7EB]" style={{ backgroundColor: `#${startHex}` }} />
             <span className="text-xs text-[#9CA3AF]">#</span>
@@ -297,7 +297,7 @@ function TabGrad() {
           </div>
         </div>
         <div className="flex-1">
-          <label className="text-xs text-[#6B7280] mb-1 block">Fin</label>
+          <label className="text-xs text-[#6B7280] mb-1 block">End</label>
           <div className="flex items-center gap-1.5 border border-[#E5E7EB] rounded-lg px-2 py-1.5">
             <div className="w-5 h-5 rounded border border-[#E5E7EB]" style={{ backgroundColor: `#${endHex}` }} />
             <span className="text-xs text-[#9CA3AF]">#</span>
@@ -320,7 +320,7 @@ function TabGrad() {
         }}
       >
         <span className="font-semibold text-sm" style={{ color: textColor }}>
-          Texto sobre gradiente
+          Text on gradient
         </span>
         <span className="absolute top-1 right-2 text-xs font-bold" style={{ color: textColor }}>
           Min: {minRatio.toFixed(2)}:1
@@ -362,28 +362,28 @@ function TabGrad() {
 
 const SIZES = [12, 14, 16, 18, 24, 32];
 
-type SizeStatus = 'fail' | 'aceptable' | 'optimo';
+type SizeStatus = 'fail' | 'acceptable' | 'optimal';
 
 function getSizeStatus(px: number, ratio: number): SizeStatus {
   if (px < 18) {
-    if (ratio >= 7) return 'optimo';
-    if (ratio >= 4.5) return 'aceptable';
+    if (ratio >= 7) return 'optimal';
+    if (ratio >= 4.5) return 'acceptable';
     return 'fail';
   }
   if (px < 24) {
-    if (ratio >= 4.5) return 'optimo';
-    if (ratio >= 3.0) return 'aceptable';
+    if (ratio >= 4.5) return 'optimal';
+    if (ratio >= 3.0) return 'acceptable';
     return 'fail';
   }
   // >= 24
-  if (ratio >= 3.0) return 'optimo';
+  if (ratio >= 3.0) return 'optimal';
   return 'fail';
 }
 
 const STATUS_CONFIG: Record<SizeStatus, { dot: string; label: string; text: string }> = {
-  fail: { dot: 'bg-red-500', label: 'No recomendado', text: 'text-red-600' },
-  aceptable: { dot: 'bg-yellow-400', label: 'Aceptable', text: 'text-yellow-600' },
-  optimo: { dot: 'bg-green-500', label: 'Óptimo', text: 'text-green-600' },
+  fail: { dot: 'bg-red-500', label: 'Not recommended', text: 'text-red-600' },
+  acceptable: { dot: 'bg-yellow-400', label: 'Acceptable', text: 'text-yellow-600' },
+  optimal: { dot: 'bg-green-500', label: 'Optimal', text: 'text-green-600' },
 };
 
 function TabTipo() {
@@ -394,8 +394,8 @@ function TabTipo() {
   const sizes = SIZES.map(px => ({ px, status: getSizeStatus(px, ratio) }));
 
   // Recommended: largest with 'optimo', or smallest green/aceptable
-  const optimos = sizes.filter(s => s.status === 'optimo');
-  const recommended = optimos.length > 0 ? optimos[optimos.length - 1] : sizes.find(s => s.status === 'aceptable');
+  const optimos = sizes.filter(s => s.status === 'optimal');
+  const recommended = optimos.length > 0 ? optimos[optimos.length - 1] : sizes.find(s => s.status === 'acceptable');
 
   // Minimum passing size
   const minPassing = sizes.find(s => s.status !== 'fail');
@@ -405,16 +405,16 @@ function TabTipo() {
       {/* Top recommendation */}
       {recommended && (
         <div className="bg-[#F0FDF4] border border-green-200 rounded-lg px-3 py-2 mb-3 flex items-center justify-between">
-          <span className="text-xs font-bold text-green-700">{recommended.px}px recomendado</span>
-          <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded font-semibold">óptimo</span>
+          <span className="text-xs font-bold text-green-700">{recommended.px}px recommended</span>
+          <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded font-semibold">optimal</span>
         </div>
       )}
 
       <p className="text-[10px] text-[#9CA3AF] mb-3 leading-relaxed">
-        Solo válido para texto grande (18px+ o 14px bold).{' '}
+        Only valid for large text (18px+ or 14px bold).{' '}
         {minPassing
-          ? `Tamaño mínimo: ${minPassing.px}px`
-          : 'No hay tamaño válido con este contraste.'}
+          ? `Minimum size: ${minPassing.px}px`
+          : 'No valid size with this contrast ratio.'}
       </p>
 
       {/* Size previews */}
@@ -435,7 +435,7 @@ function TabTipo() {
                   lineHeight: 1.2,
                 }}
               >
-                Texto de ejemplo
+                Sample text
               </span>
               <span className="text-[10px] text-[#9CA3AF] ml-auto shrink-0">{px}px</span>
             </div>
@@ -567,8 +567,8 @@ function TabImg() {
               <polyline points="17 8 12 3 7 8" />
               <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
-            <p className="text-xs font-semibold text-[#374151]">Sube una imagen</p>
-            <p className="text-[10px] text-[#9CA3AF]">para extraer colores dominantes</p>
+            <p className="text-xs font-semibold text-[#374151]">Upload an image</p>
+            <p className="text-[10px] text-[#9CA3AF]">to extract dominant colors</p>
           </>
         )}
       </div>
@@ -576,7 +576,7 @@ function TabImg() {
       {/* Extracted colors */}
       {colors.length > 0 && (
         <div>
-          <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Colores dominantes</p>
+          <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Dominant colors</p>
           <div className="grid grid-cols-2 gap-1.5">
             {colors.map((c, i) => {
               const ratio = contrastRatio({ text: `#${c.hex}`, background: `#${$background}` });
@@ -616,7 +616,7 @@ type TabKey = 'paleta' | 'multi' | 'grad' | 'tipo' | 'img';
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   {
     key: 'paleta',
-    label: 'Paleta',
+    label: 'Palette',
     icon: (
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="8" r="6" />
@@ -651,7 +651,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   },
   {
     key: 'tipo',
-    label: 'Tipo',
+    label: 'Type',
     icon: (
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M2 4h12M6 4v8M10 4v8" />

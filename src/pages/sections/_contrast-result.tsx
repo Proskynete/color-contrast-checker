@@ -34,12 +34,12 @@ export const ContrastResult = () => {
   const uiLevel = ratio >= 3 ? "AA" : "A";
   const allLevels = [
     ...levels,
-    { title: "Componentes UI", value: uiLevel },
+    { title: "UI Components", value: uiLevel },
   ];
 
   return (
     <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
-      <h2 className="text-sm font-semibold text-[#111827] mb-4">Resultados WCAG</h2>
+      <h2 className="text-sm font-semibold text-[#111827] mb-4">WCAG Results</h2>
 
       {/* Ratio display */}
       <div className="rounded-lg p-4 mb-4 text-center" style={{ backgroundColor: ratioBg }}>
@@ -50,7 +50,7 @@ export const ContrastResult = () => {
           {ratio.toFixed(2)}:1
         </p>
         <p className="text-sm mt-1 font-medium" style={{ color: ratioTextColor }}>
-          {failing ? "No cumple con el mínimo requerido" : classification.title}
+          {failing ? "Does not meet minimum requirements" : classification.title}
         </p>
       </div>
 
@@ -86,12 +86,12 @@ export const ContrastResult = () => {
 
       {/* WCAG requirements */}
       <div className="pt-3 border-t border-[#F3F4F6]">
-        <p className="text-xs font-semibold text-[#6B7280] mb-1.5">Requisitos WCAG:</p>
+        <p className="text-xs font-semibold text-[#6B7280] mb-1.5">WCAG Requirements:</p>
         <ul className="text-xs text-[#9CA3AF] space-y-0.5">
-          <li>• AA texto normal: 4.5:1</li>
-          <li>• AA texto grande: 3:1</li>
-          <li>• AAA texto normal: 7:1</li>
-          <li>• AAA texto grande: 4.5:1</li>
+          <li>• AA normal text: 4.5:1</li>
+          <li>• AA large text: 3:1</li>
+          <li>• AAA normal text: 7:1</li>
+          <li>• AAA large text: 4.5:1</li>
         </ul>
       </div>
     </div>

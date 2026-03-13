@@ -82,7 +82,7 @@ export const AiSuggest = ({ isSignedIn, plan, creditsUsed }: Props) => {
     <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
       {/* Header row */}
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-[#111827]">Sugerencias con IA</h2>
+        <h2 className="text-sm font-semibold text-[#111827]">AI Suggestions</h2>
 
         {fails && (
           <button
@@ -91,7 +91,7 @@ export const AiSuggest = ({ isSignedIn, plan, creditsUsed }: Props) => {
             className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-[#111827] hover:bg-[#1F2937] disabled:opacity-50 text-white text-xs font-semibold transition-colors shrink-0"
           >
             <span>✨</span>
-            {loading ? 'Analizando…' : 'Obtener sugerencias'}
+            {loading ? 'Analyzing…' : 'Get suggestions'}
             {freeCreditsLeft !== null && !loading && (
               <span className="text-white/50 ml-0.5">{freeCreditsLeft}/3</span>
             )}
@@ -108,20 +108,20 @@ export const AiSuggest = ({ isSignedIn, plan, creditsUsed }: Props) => {
                 <path d="M2 5l2.5 2.5 3.5-4" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            Los colores cumplen los requisitos WCAG.
+            Colors meet WCAG requirements.
           </div>
         )}
 
         {fails && !fetched && !loading && !error && (
           <p className="text-xs text-[#9CA3AF]">
             {!isSignedIn
-              ? 'Inicia sesión para usar sugerencias de IA · 3 gratis por mes'
-              : 'Haz clic en "Obtener sugerencias" para recibir colores accesibles.'}
+              ? 'Sign in to use AI suggestions · 3 free per month'
+              : 'Click "Get suggestions" to receive accessible colors.'}
           </p>
         )}
 
         {loading && (
-          <p className="text-sm text-[#9CA3AF] py-2">Analizando combinaciones de colores…</p>
+          <p className="text-sm text-[#9CA3AF] py-2">Analyzing color combinations…</p>
         )}
 
         {error && (
@@ -156,7 +156,7 @@ export const AiSuggest = ({ isSignedIn, plan, creditsUsed }: Props) => {
                   onClick={() => applySuggestion(s)}
                   className="text-xs px-3 py-1.5 rounded-lg border border-[#E5E7EB] bg-white text-[#374151] hover:bg-[#F3F4F6] font-semibold transition-colors"
                 >
-                  Aplicar
+                  Apply
                 </button>
               </div>
             ))}

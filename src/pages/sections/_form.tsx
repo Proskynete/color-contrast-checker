@@ -100,7 +100,7 @@ export const Form = () => {
     <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-[#111827]">Colores</h2>
+        <h2 className="text-sm font-semibold text-[#111827]">Colors</h2>
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => toggleMode('history')}
@@ -114,7 +114,7 @@ export const Form = () => {
               <circle cx="8" cy="8" r="6" />
               <path d="M8 5v3l2 2" />
             </svg>
-            Historial
+            History
           </button>
           <button
             onClick={() => toggleMode('export')}
@@ -127,7 +127,7 @@ export const Form = () => {
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 12h8M8 2v8M5 7l3 3 3-3" />
             </svg>
-            Exportar
+            Export
           </button>
         </div>
       </div>
@@ -138,7 +138,7 @@ export const Form = () => {
           <div>
             <ColorPickerSection
               id="text-color"
-              label="Texto (Foreground)"
+              label="Text (Foreground)"
               fieldName="text"
               value={$text}
               setValue={handleSetValue('text')}
@@ -159,14 +159,14 @@ export const Form = () => {
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 3l-3 3 3 3M1 6h10M12 13l3-3-3-3M15 10H5" />
               </svg>
-              Intercambiar
+              Swap
             </button>
           </div>
 
           <div>
             <ColorPickerSection
               id="background-color"
-              label="Fondo (Background)"
+              label="Background"
               fieldName="background"
               value={$background}
               setValue={handleSetValue('background')}
@@ -185,18 +185,18 @@ export const Form = () => {
       {mode === 'history' && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-[#6B7280]">Ultimas combinaciones</p>
+            <p className="text-xs font-medium text-[#6B7280]">Recent combinations</p>
             {history.length > 0 && (
               <button
                 onClick={clearHistory}
                 className="text-xs text-[#9CA3AF] hover:text-[#374151] transition-colors"
               >
-                Limpiar
+                Clear
               </button>
             )}
           </div>
           {history.length === 0 ? (
-            <p className="text-xs text-[#9CA3AF] py-6 text-center">No hay combinaciones guardadas aún.</p>
+            <p className="text-xs text-[#9CA3AF] py-6 text-center">No saved combinations yet.</p>
           ) : (
             <div className="flex flex-col gap-1">
               {history.map((entry, i) => (
@@ -259,7 +259,7 @@ export const Form = () => {
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 8l3 3 7-7" />
                   </svg>
-                  Copiado
+                  Copied
                 </>
               ) : (
                 <>
@@ -267,7 +267,7 @@ export const Form = () => {
                     <rect x="5" y="5" width="8" height="8" rx="1" />
                     <path d="M3 11V4a1 1 0 011-1h7" />
                   </svg>
-                  Copiar
+                  Copy
                 </>
               )}
             </button>
@@ -278,7 +278,7 @@ export const Form = () => {
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 12h8M8 2v8M5 7l3 3 3-3" />
               </svg>
-              Descargar
+              Download
             </button>
           </div>
         </div>
