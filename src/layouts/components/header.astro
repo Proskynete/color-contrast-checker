@@ -11,6 +11,9 @@ import { Show, SignInButton, UserButton } from '@clerk/astro/components';
 
 		<div class="flex items-center gap-2">
 			<Show when="signed-out">
+				<a href="/pricing" class="h-8 px-3 text-xs font-semibold rounded-lg text-[#6B7280] hover:text-[#111827] transition-colors flex items-center">
+					Pricing
+				</a>
 				<SignInButton mode="modal" asChild>
 					<button data-clerk-sign-in class="h-8 px-4 text-xs font-semibold rounded-lg border border-[#E5E7EB] bg-white text-[#374151] hover:bg-[#F9FAFB] hover:border-[#D1D5DB] transition-colors">
 						Sign in
@@ -18,6 +21,9 @@ import { Show, SignInButton, UserButton } from '@clerk/astro/components';
 				</SignInButton>
 			</Show>
 			<Show when="signed-in">
+				<a href="/pricing" class="h-8 px-3 text-xs font-semibold rounded-lg text-[#6B7280] hover:text-[#111827] transition-colors flex items-center">
+					Billing
+				</a>
 				<UserButton />
 			</Show>
 		</div>

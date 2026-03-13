@@ -1,0 +1,250 @@
+---
+import LandingLayout from '../layouts/landing.layout.astro';
+import { sql } from '../db/client';
+
+const { userId: clerkId } = Astro.locals.auth();
+
+let isSignedIn = false;
+let plan = 'free';
+if (clerkId) {
+	isSignedIn = true;
+	const rows = (await sql.query(
+		`SELECT plan FROM users WHERE clerk_id = $1`,
+		[clerkId],
+	)) as { plan: string }[];
+
+	if (rows.length) {
+		plan = rows[0].plan;
+	}
+}
+
+const proMonthlyId = import.meta.env.PUBLIC_LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID;
+const proYearlyId = import.meta.env.PUBLIC_LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID;
+const teamsMonthlyId = import.meta.env.PUBLIC_LEMONSQUEEZY_TEAMS_MONTHLY_VARIANT_ID;
+---
+
+<LandingLayout>
+	<div class="max-w-4xl mx-auto py-4">
+
+		<!-- Header -->
+		<div class="text-center mb-10">
+			<h1 class="text-3xl font-bold text-[#111827] tracking-tight mb-2">Simple, transparent pricing</h1>
+			<p class="text-[#6B7280] text-sm max-w-md mx-auto">
+				Start for free. Upgrade when you need history, AI suggestions, or team collaboration.
+			</p>
+		</div>
+
+		<!-- Tier cards -->
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+			<!-- Free -->
+			<div class={`bg-white rounded-xl border p-6 flex flex-col ${plan === 'free' && isSignedIn ? 'border-[#111827] ring-1 ring-[#111827]' : 'border-[#E5E7EB]'}`}>
+				<div class="mb-5">
+					<div class="flex items-center justify-between mb-1">
+						<p class="text-sm font-semibold text-[#111827]">Free</p>
+						{plan === 'free' && isSignedIn && (
+							<span class="text-[10px] font-semibold bg-[#111827] text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Current</span>
+						)}
+					</div>
+					<p class="text-3xl font-bold text-[#111827]">$0</p>
+					<p class="text-xs text-[#9CA3AF] mt-0.5">forever</p>
+				</div>
+
+				<ul class="flex flex-col gap-2 text-sm text-[#374151] mb-6 flex-1">
+					{[
+						'Unlimited contrast checks',
+						'3 AI suggestions / month',
+						'Color palette tools',
+						'Daltonism simulation',
+					].map((f) => (
+						<li class="flex items-start gap-2">
+							<span class="text-green-500 mt-0.5 shrink-0">✓</span>
+							{f}
+						</li>
+					))}
+					{[
+						'No check history',
+						'No saved palettes',
+						'No sharing',
+					].map((f) => (
+						<li class="flex items-start gap-2 text-[#9CA3AF]">
+							<span class="shrink-0 mt-0.5">–</span>
+							{f}
+						</li>
+					))}
+				</ul>
+
+				<a href="/" class="flex items-center justify-center text-xs font-semibold py-2 rounded-lg border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F9FAFB] transition-colors">
+					{isSignedIn ? 'Current plan' : 'Get started free'}
+				</a>
+			</div>
+
+			<!-- Pro -->
+			<div class={`bg-white rounded-xl border p-6 flex flex-col relative ${plan === 'pro' && isSignedIn ? 'border-[#111827] ring-1 ring-[#111827]' : 'border-[#E5E7EB]'}`}>
+				<div class="absolute -top-3 left-1/2 -translate-x-1/2">
+					<span class="text-[10px] font-semibold bg-[#111827] text-white px-3 py-1 rounded-full uppercase tracking-wider">Most popular</span>
+				</div>
+
+				<div class="mb-5">
+					<div class="flex items-center justify-between mb-1">
+						<p class="text-sm font-semibold text-[#111827]">Pro</p>
+						{plan === 'pro' && isSignedIn && (
+							<span class="text-[10px] font-semibold bg-[#111827] text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Current</span>
+						)}
+					</div>
+					<p class="text-3xl font-bold text-[#111827]">$9<span class="text-base font-normal text-[#6B7280]">/mo</span></p>
+					<p class="text-xs text-[#9CA3AF] mt-0.5">or $80/year — save 26%</p>
+				</div>
+
+				<ul class="flex flex-col gap-2 text-sm text-[#374151] mb-6 flex-1">
+					{[
+						'Everything in Free',
+						'Unlimited AI suggestions',
+						'90-day check history',
+						'10 saved palettes',
+						'Shareable links (permanent)',
+					].map((f) => (
+						<li class="flex items-start gap-2">
+							<span class="text-green-500 mt-0.5 shrink-0">✓</span>
+							{f}
+						</li>
+					))}
+				</ul>
+
+				{plan === 'pro' && isSignedIn ? (
+					<button
+						id="manage-billing-btn"
+						class="flex items-center justify-center text-xs font-semibold py-2 rounded-lg border border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] transition-colors"
+					>
+						Manage billing
+					</button>
+				) : plan === 'free' || !isSignedIn ? (
+					<div class="flex flex-col gap-2">
+						<button
+							class="upgrade-btn flex items-center justify-center text-xs font-semibold py-2 rounded-lg bg-[#111827] hover:bg-[#1F2937] text-white transition-colors"
+							data-variant-id={proMonthlyId}
+						>
+							Upgrade — $9/mo
+						</button>
+						<button
+							class="upgrade-btn flex items-center justify-center text-xs font-semibold py-2 rounded-lg border border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] transition-colors"
+							data-variant-id={proYearlyId}
+						>
+							Upgrade — $80/yr
+						</button>
+					</div>
+				) : (
+					<button
+						class="upgrade-btn flex items-center justify-center text-xs font-semibold py-2 rounded-lg bg-[#111827] hover:bg-[#1F2937] text-white transition-colors"
+						data-variant-id={proMonthlyId}
+					>
+						Upgrade to Pro
+					</button>
+				)}
+			</div>
+
+			<!-- Teams -->
+			<div class={`bg-white rounded-xl border p-6 flex flex-col ${plan === 'teams' && isSignedIn ? 'border-[#111827] ring-1 ring-[#111827]' : 'border-[#E5E7EB]'}`}>
+				<div class="mb-5">
+					<div class="flex items-center justify-between mb-1">
+						<p class="text-sm font-semibold text-[#111827]">Teams</p>
+						{plan === 'teams' && isSignedIn && (
+							<span class="text-[10px] font-semibold bg-[#111827] text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Current</span>
+						)}
+					</div>
+					<p class="text-3xl font-bold text-[#111827]">$29<span class="text-base font-normal text-[#6B7280]">/mo</span></p>
+					<p class="text-xs text-[#9CA3AF] mt-0.5">up to 5 team members</p>
+				</div>
+
+				<ul class="flex flex-col gap-2 text-sm text-[#374151] mb-6 flex-1">
+					{[
+						'Everything in Pro',
+						'365-day check history',
+						'Unlimited saved palettes',
+						'Shared brand palettes',
+						'Bulk CSV checker',
+						'PDF audit reports',
+						'Team collaboration (5 seats)',
+					].map((f) => (
+						<li class="flex items-start gap-2">
+							<span class="text-green-500 mt-0.5 shrink-0">✓</span>
+							{f}
+						</li>
+					))}
+				</ul>
+
+				{plan === 'teams' && isSignedIn ? (
+					<button
+						id="manage-billing-btn"
+						class="flex items-center justify-center text-xs font-semibold py-2 rounded-lg border border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] transition-colors"
+					>
+						Manage billing
+					</button>
+				) : (
+					<button
+						class="upgrade-btn flex items-center justify-center text-xs font-semibold py-2 rounded-lg border border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] transition-colors"
+						data-variant-id={teamsMonthlyId}
+					>
+						Upgrade — $29/mo
+					</button>
+				)}
+			</div>
+		</div>
+
+		<!-- WCAG guarantee note -->
+		<p class="text-center text-xs text-[#9CA3AF]">
+			All plans include full WCAG 2.1 AA/AAA compliance checking. No credit card required for Free.
+		</p>
+	</div>
+</LandingLayout>
+
+<script define:vars={{ isSignedIn }}>
+	// Upgrade buttons
+	document.querySelectorAll('.upgrade-btn').forEach((btn) => {
+		btn.addEventListener('click', async () => {
+			if (!isSignedIn) {
+				document.querySelector('[data-clerk-sign-in]')?.click();
+				return;
+			}
+			const variantId = btn.getAttribute('data-variant-id');
+			if (!variantId) return;
+
+			btn.disabled = true;
+			btn.textContent = 'Redirecting…';
+
+			try {
+				const res = await fetch('/api/lemonsqueezy/checkout', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ variantId, redirectUrl: window.location.origin + '/pricing' }),
+				});
+				const data = await res.json();
+				if (data.url) window.location.href = data.url;
+			} catch {
+				btn.disabled = false;
+				btn.textContent = 'Try again';
+			}
+		});
+	});
+
+	// Manage billing buttons
+	document.querySelectorAll('#manage-billing-btn').forEach((btn) => {
+		btn.addEventListener('click', async () => {
+			btn.disabled = true;
+			btn.textContent = 'Loading…';
+
+			try {
+				const res = await fetch('/api/lemonsqueezy/portal');
+				const data = await res.json();
+				if (data.url) window.location.href = data.url;
+				else {
+					btn.disabled = false;
+					btn.textContent = 'Manage billing';
+				}
+			} catch {
+				btn.disabled = false;
+				btn.textContent = 'Manage billing';
+			}
+		});
+	});
+</script>

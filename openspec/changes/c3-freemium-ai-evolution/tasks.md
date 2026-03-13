@@ -50,9 +50,9 @@
 
 - [x] 6.1 Extend `POST /api/checks` to accept `share: true` flag and generate `share_token` with appropriate `share_expires_at` (7 days for Free, null for Pro/Teams)
 - [x] 6.2 Create `GET /api/checks/[token]` endpoint — returns check data, HTTP 410 if expired, HTTP 404 if not found
-- [ ] 6.3 Create `/share/[token]` page — read-only result card with color preview, ratio, WCAG levels, and "Try it yourself" link to `/?text=X&bg=Y`
-- [ ] 6.4 Add "Share" button to checker result UI (visible to authenticated users only)
-- [ ] 6.5 Implement pre-fill from URL query params (`/?text=RRGGBB&bg=RRGGBB`) in the checker form
+- [x] 6.3 Create `/share/[token]` page — read-only result card with color preview, ratio, WCAG levels, and "Try it yourself" link to `/?text=X&bg=Y`
+- [x] 6.4 Add "Share" button to checker result UI (visible to authenticated users only)
+- [x] 6.5 Implement pre-fill from URL query params (`/?text=RRGGBB&bg=RRGGBB`) in the checker form
 
 ## 7. Subscription Billing (Lemon Squeezy)
 
@@ -64,9 +64,9 @@
 - [x] 7.4 Add variant ID → plan mapping (including Teams yearly variant fix)
 - [x] 7.5 Implement Teams → Pro downgrade logic: set `teams.status = 'frozen'`, record `teams.frozen_at`
 - [x] 7.6 Create Lemon Squeezy checkout session endpoint (`POST /api/lemonsqueezy/checkout`)
-- [ ] 7.7 Create billing management link (Lemon Squeezy Customer Portal)
-- [ ] 7.8 Build pricing/upgrade page showing Free / Pro / Teams tiers with upgrade CTAs
-- [ ] 7.9 Add "Manage billing" link to account settings
+- [x] 7.7 Create billing management link (Lemon Squeezy Customer Portal)
+- [x] 7.8 Build pricing/upgrade page showing Free / Pro / Teams tiers with upgrade CTAs
+- [x] 7.9 Add "Manage billing" link to account settings
 
 ## 8. AI Color Correction
 
