@@ -1,13 +1,5 @@
 import { useState } from 'react';
 
-type PaletteRole = {
-  key: string;
-  label: string;
-  value: string;
-  contrastPair?: string;
-  ratio?: number;
-};
-
 type Annotation = { against: string; ratio: number };
 
 type Props = {
@@ -18,20 +10,21 @@ type Props = {
   teamStatus?: string | null;
 };
 
-const ROLE_META: Record<string, { label: string; description: string }> = {
-  primary: { label: 'Primary', description: 'Brand color' },
-  primary_text: { label: 'On Primary', description: 'Text on primary' },
-  secondary: { label: 'Secondary', description: 'Accent color' },
-  background: { label: 'Background', description: 'Page surface' },
-  text_primary: { label: 'Text', description: 'Body text on background' },
+type Palette = {
+  primary: string;
+  primary_text: string;
+  secondary: string;
+  background: string;
+  text_primary: string;
 };
 
-const PREVIEW_PAIRS: Array<[string, string]> = [
-  ['primary', 'primary_text'],
-  ['secondary', 'primary_text'],
-  ['background', 'text_primary'],
-  ['primary', 'text_primary'],
-];
+const ROLE_LABELS: Record<string, string> = {
+  primary: 'Primary',
+  primary_text: 'On Primary',
+  secondary: 'Secondary',
+  background: 'Background',
+  text_primary: 'Text',
+};
 
 function wcagBadgeClass(ratio: number): string {
   if (ratio >= 7) return 'bg-green-100 text-green-800';
@@ -47,12 +40,127 @@ function wcagLabel(ratio: number): string {
   return 'Fail';
 }
 
+function UiPreview({ p }: { p: Palette }) {
+  return (
+    <div className="mx-5 mb-4 rounded-xl overflow-hidden border border-black/[0.07] text-[11px] select-none">
+      {/* Navbar */}
+      <div
+        className="px-4 py-2.5 flex items-center justify-between"
+        style={{ backgroundColor: p.primary }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 rounded-full flex items-center justify-center font-bold text-[9px]"
+            style={{ backgroundColor: p.primary_text, color: p.primary }}>
+            B
+          </div>
+          <span className="font-semibold" style={{ color: p.primary_text }}>Brand</span>
+          <span className="opacity-60 hidden sm:block" style={{ color: p.primary_text }}>Home</span>
+          <span className="opacity-60 hidden sm:block" style={{ color: p.primary_text }}>About</span>
+          <span className="opacity-60 hidden sm:block" style={{ color: p.primary_text }}>Pricing</span>
+        </div>
+        <button
+          className="px-2.5 py-1 rounded-md text-[10px] font-semibold"
+          style={{ backgroundColor: p.primary_text, color: p.primary }}
+        >
+          Sign up
+        </button>
+      </div>
+
+      {/* Hero */}
+      <div className="px-4 pt-5 pb-4" style={{ backgroundColor: p.background }}>
+        <p className="font-bold text-[15px] leading-snug mb-1" style={{ color: p.text_primary }}>
+          Grow your business faster
+        </p>
+        <p className="text-[11px] leading-relaxed mb-3.5 max-w-xs" style={{ color: p.text_primary, opacity: 0.65 }}>
+          The platform that helps you close more deals and scale faster than ever.
+        </p>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            className="px-3 py-1.5 rounded-md font-semibold text-[10px]"
+            style={{ backgroundColor: p.primary, color: p.primary_text }}
+          >
+            Get started
+          </button>
+          <button
+            className="px-3 py-1.5 rounded-md font-semibold text-[10px] border"
+            style={{ borderColor: p.secondary, color: p.secondary, backgroundColor: 'transparent' }}
+          >
+            Learn more
+          </button>
+        </div>
+      </div>
+
+      {/* Cards row */}
+      <div
+        className="px-4 pb-4 grid grid-cols-2 gap-2.5"
+        style={{ backgroundColor: p.background }}
+      >
+        {/* Metric card — primary */}
+        <div
+          className="rounded-lg p-3"
+          style={{ backgroundColor: p.primary }}
+        >
+          <p className="text-[9px] font-semibold uppercase tracking-wide mb-1" style={{ color: p.primary_text, opacity: 0.75 }}>Revenue</p>
+          <p className="font-bold text-[16px] leading-none" style={{ color: p.primary_text }}>$24.5k</p>
+          <p className="text-[9px] mt-1" style={{ color: p.primary_text, opacity: 0.65 }}>↑ 12% this month</p>
+        </div>
+
+        {/* Metric card — surface */}
+        <div
+          className="rounded-lg p-3 border"
+          style={{ backgroundColor: p.background, borderColor: p.text_primary + '18' }}
+        >
+          <p className="text-[9px] font-semibold uppercase tracking-wide mb-1" style={{ color: p.text_primary, opacity: 0.5 }}>Users</p>
+          <p className="font-bold text-[16px] leading-none" style={{ color: p.text_primary }}>1,847</p>
+          <div
+            className="mt-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-semibold"
+            style={{ backgroundColor: p.secondary + '22', color: p.secondary }}
+          >
+            ● Active
+          </div>
+        </div>
+      </div>
+
+      {/* Components strip */}
+      <div
+        className="px-4 py-2.5 flex items-center gap-2 border-t flex-wrap"
+        style={{ backgroundColor: p.background, borderColor: p.text_primary + '12' }}
+      >
+        <span
+          className="px-2 py-0.5 rounded-full text-[9px] font-semibold"
+          style={{ backgroundColor: p.primary, color: p.primary_text }}
+        >
+          Primary
+        </span>
+        <span
+          className="px-2 py-0.5 rounded-full text-[9px] font-semibold border"
+          style={{ borderColor: p.secondary, color: p.secondary }}
+        >
+          Secondary
+        </span>
+        <span
+          className="px-2 py-0.5 rounded-full text-[9px] font-medium border"
+          style={{ borderColor: p.text_primary + '30', color: p.text_primary, opacity: 0.6 }}
+        >
+          Default
+        </span>
+        <span
+          className="ml-auto text-[9px] font-medium"
+          style={{ color: p.text_primary, opacity: 0.3 }}
+        >
+          preview
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, teamStatus = null }: Props) => {
   const [open, setOpen] = useState(false);
   const [brandColor, setBrandColor] = useState('#1E40AF');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [palette, setPalette] = useState<Record<string, string> | null>(null);
+  const [palette, setPalette] = useState<Palette | null>(null);
   const [annotations, setAnnotations] = useState<Record<string, Annotation> | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
@@ -123,16 +231,6 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
     }
   };
 
-  const roleList: PaletteRole[] = palette
-    ? Object.entries(palette).map(([key, value]) => ({
-        key,
-        label: ROLE_META[key]?.label ?? key,
-        value,
-        contrastPair: annotations?.[key]?.against,
-        ratio: annotations?.[key]?.ratio,
-      }))
-    : [];
-
   return (
     <>
       <button
@@ -148,14 +246,14 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[92vh]"
+            className="w-full max-w-xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[92vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
               <div>
                 <p className="font-semibold text-gray-800">AI Palette Generator</p>
-                <p className="text-xs text-gray-400 mt-0.5">Generate a full accessible color system from your brand color</p>
+                <p className="text-xs text-gray-400 mt-0.5">Generate an accessible color system from your brand color</p>
               </div>
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
             </div>
@@ -185,20 +283,18 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
               <>
                 {/* Input row */}
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 flex-shrink-0">
-                  <div className="relative flex items-center">
-                    <div
-                      className="w-9 h-9 rounded-lg border border-gray-200 flex-shrink-0 cursor-pointer"
-                      style={{ backgroundColor: brandColor }}
-                      onClick={() => document.getElementById('ai-palette-color-input')?.click()}
-                    />
-                    <input
-                      id="ai-palette-color-input"
-                      type="color"
-                      value={brandColor}
-                      onChange={(e) => setBrandColor(e.target.value.toUpperCase())}
-                      className="sr-only"
-                    />
-                  </div>
+                  <div
+                    className="w-9 h-9 rounded-lg border border-gray-200 flex-shrink-0 cursor-pointer"
+                    style={{ backgroundColor: brandColor }}
+                    onClick={() => document.getElementById('ai-palette-color-input')?.click()}
+                  />
+                  <input
+                    id="ai-palette-color-input"
+                    type="color"
+                    value={brandColor}
+                    onChange={(e) => setBrandColor(e.target.value.toUpperCase())}
+                    className="sr-only"
+                  />
                   <input
                     type="text"
                     value={brandColor}
@@ -225,15 +321,14 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
 
                 {/* Skeleton loader */}
                 {loading && (
-                  <div className="flex-1 flex flex-col items-center justify-center py-16 gap-3">
-                    <div className="flex gap-2">
-                      {[...Array(5)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-10 h-10 rounded-lg bg-gray-100 animate-pulse"
-                          style={{ animationDelay: `${i * 80}ms` }}
-                        />
-                      ))}
+                  <div className="flex-1 flex flex-col items-center justify-center py-16 gap-4">
+                    <div className="w-full max-w-xs mx-auto px-5 space-y-2">
+                      <div className="h-8 rounded-lg bg-gray-100 animate-pulse" />
+                      <div className="h-20 rounded-lg bg-gray-100 animate-pulse" style={{ animationDelay: '80ms' }} />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="h-16 rounded-lg bg-gray-100 animate-pulse" style={{ animationDelay: '160ms' }} />
+                        <div className="h-16 rounded-lg bg-gray-100 animate-pulse" style={{ animationDelay: '240ms' }} />
+                      </div>
                     </div>
                     <p className="text-sm text-gray-400">Generating accessible palette…</p>
                   </div>
@@ -244,7 +339,7 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
                   <div className="flex-1 flex flex-col items-center justify-center py-16 text-center px-6">
                     <div className="text-3xl mb-3">🎨</div>
                     <p className="text-sm text-gray-500 max-w-xs">
-                      Enter your brand color and generate a full accessible palette — primary, secondary, backgrounds, and text colors, all WCAG-compliant.
+                      Enter your brand color and generate a WCAG-compliant color system with a live UI preview.
                     </p>
                   </div>
                 )}
@@ -252,60 +347,45 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
                 {/* Palette results */}
                 {!loading && palette && (
                   <div className="overflow-y-auto flex-1">
-                    {/* Color swatches grid */}
-                    <div className="px-5 py-4 grid grid-cols-5 gap-3">
-                      {roleList.map((role) => (
-                        <div key={role.key} className="flex flex-col items-center gap-1">
+                    {/* Color strip */}
+                    <div className="flex px-5 pt-5 pb-4 gap-2">
+                      {(Object.entries(palette) as [string, string][]).map(([key, value]) => (
+                        <div key={key} className="flex-1 flex flex-col items-center gap-1">
                           <div
-                            className="w-full aspect-square rounded-xl border border-black/10 shadow-sm"
-                            style={{ backgroundColor: role.value }}
-                            title={`${role.label}: ${role.value}`}
+                            className="w-full h-10 rounded-lg border border-black/[0.07] shadow-sm"
+                            style={{ backgroundColor: value }}
+                            title={`${ROLE_LABELS[key]}: ${value}`}
                           />
-                          <p className="text-[10px] font-medium text-gray-600 text-center leading-tight">{role.label}</p>
-                          <p className="text-[10px] font-mono text-gray-400">{role.value}</p>
+                          <p className="text-[9px] font-medium text-gray-500 text-center leading-tight">{ROLE_LABELS[key]}</p>
+                          <p className="text-[9px] font-mono text-gray-400">{value}</p>
                         </div>
                       ))}
                     </div>
 
-                    {/* Preview pairs */}
-                    <div className="px-5 pb-4 grid grid-cols-2 gap-3">
-                      {PREVIEW_PAIRS.map(([bg, fg]) => (
-                        palette[bg] && palette[fg] && (
-                          <div
-                            key={`${bg}-${fg}`}
-                            className="rounded-xl p-3 border border-black/10"
-                            style={{ backgroundColor: palette[bg] }}
-                          >
-                            <p className="text-xs font-semibold mb-0.5" style={{ color: palette[fg] }}>
-                              {ROLE_META[bg]?.label}
-                            </p>
-                            <p className="text-xs" style={{ color: palette[fg] }}>
-                              {ROLE_META[bg]?.description}
-                            </p>
-                          </div>
-                        )
-                      ))}
-                    </div>
+                    {/* Live UI preview */}
+                    <UiPreview p={palette} />
 
-                    {/* Contrast annotations */}
-                    <div className="px-5 pb-4">
-                      <p className="text-xs font-semibold text-gray-500 mb-2">Contrast ratios</p>
-                      <div className="space-y-1.5">
-                        {roleList.filter((r) => r.ratio !== undefined).map((role) => (
-                          <div key={role.key} className="flex items-center gap-3">
-                            <div className="flex items-center gap-1.5 w-36 flex-shrink-0">
-                              <div className="w-4 h-4 rounded border border-gray-200" style={{ backgroundColor: role.value }} />
-                              <div className="w-4 h-4 rounded border border-gray-200" style={{ backgroundColor: role.contrastPair }} />
-                              <span className="text-xs text-gray-600">{role.label}</span>
+                    {/* Contrast ratios */}
+                    {annotations && Object.keys(annotations).length > 0 && (
+                      <div className="px-5 pb-4">
+                        <p className="text-xs font-semibold text-gray-500 mb-2">Contrast ratios</p>
+                        <div className="space-y-1.5">
+                          {(Object.entries(annotations) as [string, Annotation][]).map(([key, ann]) => (
+                            <div key={key} className="flex items-center gap-3">
+                              <div className="flex items-center gap-1.5 w-32 flex-shrink-0">
+                                <div className="w-4 h-4 rounded border border-gray-200" style={{ backgroundColor: palette[key as keyof Palette] }} />
+                                <div className="w-4 h-4 rounded border border-gray-200" style={{ backgroundColor: ann.against }} />
+                                <span className="text-xs text-gray-600">{ROLE_LABELS[key] ?? key}</span>
+                              </div>
+                              <span className="text-xs font-mono text-gray-700">{ann.ratio.toFixed(2)}:1</span>
+                              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${wcagBadgeClass(ann.ratio)}`}>
+                                {wcagLabel(ann.ratio)}
+                              </span>
                             </div>
-                            <span className="text-xs font-mono text-gray-700">{role.ratio?.toFixed(2)}:1</span>
-                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${wcagBadgeClass(role.ratio!)}`}>
-                              {wcagLabel(role.ratio!)}
-                            </span>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Save section */}
                     <div className="px-5 pb-5 border-t border-gray-100 pt-4">
