@@ -38,9 +38,9 @@ if (clerkId) {
 		</p>
 	</div>
 
-	<!-- Main 3-column grid -->
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-		<!-- Left column: Form + WCAG Results + AI Suggest -->
+	<!-- Asymmetric 2-column layout: controls (1fr) | workspace (2fr) -->
+	<div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-5">
+		<!-- Left column: compact controls -->
 		<div class="flex flex-col gap-5">
 			<Form client:visible />
 			<ContrastResult client:visible />
@@ -52,13 +52,9 @@ if (clerkId) {
 			/>
 		</div>
 
-		<!-- Center column: Preview -->
+		<!-- Right column: spacious workspace -->
 		<div class="flex flex-col gap-5">
 			<Preview client:visible />
-		</div>
-
-		<!-- Right column: Tools Panel -->
-		<div>
 			<ToolsPanel client:load />
 		</div>
 	</div>
