@@ -1,11 +1,11 @@
 ---
-import Typography from '../../components/typography.astro';
 ---
 
-<footer class="w-full h-16 flex items-center justify-center md:justify-end bg-gray-800 text-gray-400 px-10">
-	<Typography as="p" variant="small" class="flex items-center gap-1">
-		Color Contrast Checker developed by
-		<a href="https://eduardoalvarez.dev" target="_blank" rel="noopener noreferrer" class="text-white">Eduardo Álvarez</a
-		>
-	</Typography>
+<footer class="border-t border-[#E2E0DA] bg-white">
+	<div class="max-w-4xl w-full mx-auto px-5 md:px-8 h-12 flex items-center justify-between">
+		<span class="text-xs text-[#9C9A93]">WCAG 2.1 compliant checker</span>
+		<span class="text-xs text-[#9C9A93]">
+			by <a href="https://eduardoalvarez.dev" target="_blank" rel="noopener noreferrer" class="text-[#6B6860] hover:text-[#1A1917] transition-colors">Eduardo Álvarez</a>
+		</span>
+	</div>
 </footer>

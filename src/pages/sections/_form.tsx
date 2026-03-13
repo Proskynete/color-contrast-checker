@@ -21,28 +21,23 @@ export const Form = () => {
 	};
 
 	return (
-		<div className="flex relative flex-col gap-4 w-full md:w-1/2 p-8">
-			<div className="w-full">
-				<ColorPickerSection
-					id="text-color"
-					label="Text color"
-					fieldName="text"
-					value={$text}
-					setValue={handleSetValue('text')}
-					onChange={handleChange('text')}
-				/>
-			</div>
-
-			<div className="w-full">
-				<ColorPickerSection
-					id="background-color"
-					label="Background color"
-					fieldName="background"
-					value={$background}
-					setValue={handleSetValue('background')}
-					onChange={handleChange('background')}
-				/>
-			</div>
+		<div className="flex flex-col gap-5 w-full md:w-1/2 p-6">
+			<ColorPickerSection
+				id="text-color"
+				label="Text color"
+				fieldName="text"
+				value={$text}
+				setValue={handleSetValue('text')}
+				onChange={handleChange('text')}
+			/>
+			<ColorPickerSection
+				id="background-color"
+				label="Background color"
+				fieldName="background"
+				value={$background}
+				setValue={handleSetValue('background')}
+				onChange={handleChange('background')}
+			/>
 		</div>
 	);
 };

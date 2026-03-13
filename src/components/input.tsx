@@ -20,27 +20,31 @@ export const Input = ({
 	...props
 }: InputProps) => {
 	return (
-		<div className="relative flex flex-col gap-1">
+		<div className="flex flex-col gap-1.5">
 			{label && (
-				<label htmlFor={id} className="block text-sm font-bold text-slate-700">
+				<label htmlFor={id} className="text-xs font-medium text-[#6B6860] uppercase tracking-wider">
 					{label}
 				</label>
 			)}
 
-			<div className="relative w-full h-fit">
-				<div className="absolute flex h-full pl-3 items-center justify-center">
-					<span className={`${hasError ? 'text-red-400' : 'text-gray-600'}`}>#</span>
+			<div className="relative w-full">
+				<div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+					<span className={`text-sm ${hasError ? 'text-red-400' : 'text-[#9C9A93]'}`}
+						style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+						#
+					</span>
 				</div>
 
 				<input
 					id={id}
 					name={id}
 					type="text"
-					className={`w-full rounded-lg p-2 pl-6 text-md uppercase bg-transparent border border-spacing-0.5 focus:outline-none transition-colors duration-300 ${
+					className={`w-full h-10 rounded-lg pl-7 pr-12 text-sm uppercase border transition-colors duration-150 bg-white focus:outline-none focus:ring-2 focus:ring-offset-0 ${
 						hasError
-							? 'border-red-500 text-red-400 focus:border-red-500 hover:border-red-300'
-							: 'focus:border-gray-900 hover:border-gray-400 text-gray-700'
+							? 'border-red-300 text-red-500 focus:border-red-400 focus:ring-red-100'
+							: 'border-[#E2E0DA] text-[#1A1917] hover:border-[#C9C7BF] focus:border-[#1A1917] focus:ring-[#1A1917]/10'
 					}`}
+					style={{ fontFamily: 'var(--font-mono, monospace)' }}
 					{...props}
 				/>
 
@@ -48,11 +52,12 @@ export const Input = ({
 					<div
 						ref={previewButtonRef}
 						role="button"
-						className={`absolute top-1 right-1 border rounded-lg w-8 h-8 cursor-pointer ${
-							hasError ? 'border-red-300' : 'border-gray-300'
+						aria-label="Open color picker"
+						className={`absolute top-1.5 right-1.5 w-7 h-7 rounded-md cursor-pointer border transition-colors ${
+							hasError ? 'border-red-200' : 'border-[#E2E0DA] hover:border-[#C9C7BF]'
 						}`}
 						style={{
-							backgroundColor: `${hasError ? `#${DEFAULT_VALUES.BACKGROUND_COLOR}` : `#${props.value}`}`,
+							backgroundColor: `#${hasError ? DEFAULT_VALUES.BACKGROUND_COLOR : props.value}`,
 						}}
 						onClick={onPreviewClick}
 					/>

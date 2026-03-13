@@ -8,15 +8,16 @@ export const Preview = () => {
 
 	return (
 		<div
-			className="w-full md:w-1/2 flex flex-col items-center justify-center text-center md:p-8 py-20 rounded-b-xl md:rounded-tr-xl md:rounded-bl-none"
-			style={{
-				color: `#${$text}`,
-				backgroundColor: `#${$background}`,
-			}}
+			className="w-full md:w-1/2 flex flex-col justify-center p-8 md:rounded-r-xl rounded-b-xl md:rounded-b-none min-h-52"
+			style={{ color: `#${$text}`, backgroundColor: `#${$background}` }}
 		>
-			<p className="text-3xl font-bold mb-2">Lorem ipsum.</p>
-			<p className="text text-sm">Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
-			<p className="text text-xs">Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+			<p className="text-3xl font-semibold mb-2 leading-tight">The quick brown fox</p>
+			<p className="text-base mb-3 leading-relaxed opacity-90">
+				Aa — Contrast ratio preview for body text at normal size.
+			</p>
+			<p className="text-xs leading-relaxed opacity-75">
+				Caption · Small text must meet 4.5:1 for WCAG AA compliance.
+			</p>
 		</div>
 	);
 };

@@ -11,44 +11,62 @@ import Footer from './components/footer.astro';
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 		<link rel="canonical" href="https://c3.eduardoalvarez.dev" />
-		<meta name="title" content="Color Contrast Checker" />
+		<meta name="title" content="C3 — Color Contrast Checker" />
 		<meta name="description" content="Check the contrast ratio between text and background colors and verify WCAG AA/AAA accessibility compliance." />
 		<meta name="author" content="Eduardo Álvarez Castañeda" />
-		<meta name="application-name" content="Color Contrast Checker" />
-		<meta name="image" content="/color-contrast-checker.webp" />
+		<meta name="application-name" content="C3 Color Contrast Checker" />
 
 		<meta property="og:url" content="https://c3.eduardoalvarez.dev" />
-		<meta property="og:title" content="Color Contrast Checker" />
-		<meta
-			property="og:description"
-			content="Application that allows you to contrast two colors to know whether it complies with accessibility"
-		/>
+		<meta property="og:title" content="C3 — Color Contrast Checker" />
+		<meta property="og:description" content="Check the contrast ratio between text and background colors and verify WCAG AA/AAA accessibility compliance." />
 		<meta property="og:image" content="/images/color-contrast-checker.webp" />
 
 		<meta property="twitter:card" content="summary_large_image" />
 		<meta property="twitter:url" content="https://c3.eduardoalvarez.dev" />
-		<meta property="twitter:title" content="Color Contrast Checker" />
-		<meta
-			property="twitter:description"
-			content="Application that allows you to contrast two colors to know whether it complies with accessibility"
-		/>
+		<meta property="twitter:title" content="C3 — Color Contrast Checker" />
+		<meta property="twitter:description" content="Check the contrast ratio between text and background colors and verify WCAG AA/AAA accessibility compliance." />
 		<meta property="twitter:image" content="/images/color-contrast-checker.webp" />
 
 		<meta name="generator" content={Astro.generator} />
-		<title>Color Contrast Checker</title>
+		<title>C3 — Color Contrast Checker</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+		<style>
+			:root {
+				--font-sans: 'DM Sans', system-ui, sans-serif;
+				--font-mono: 'DM Mono', 'Fira Code', monospace;
+				--bg: #F7F6F3;
+				--surface: #FFFFFF;
+				--border: #E2E0DA;
+				--border-strong: #C9C7BF;
+				--text-primary: #1A1917;
+				--text-secondary: #6B6860;
+				--text-tertiary: #9C9A93;
+				--accent: #1A1917;
+			}
+			* { box-sizing: border-box; }
+			body {
+				font-family: var(--font-sans);
+				background: var(--bg);
+				color: var(--text-primary);
+				margin: 0;
+				min-height: 100vh;
+			}
+		</style>
 	</head>
 
-	<body class="w-screen h-screen">
-		<div class="w-full h-full grid grid-rows-[auto,1fr] overflow-x-hidden">
+	<body>
+		<div class="min-h-screen flex flex-col">
 			<Header />
-
-			<main class="w-full grid grid-rows-[1fr,auto] overflow-x-auto">
-				<div class="max-w-4xl lg:w-4/5 flex flex-col justify-center gap-2 mx-auto px-10 pt-10 pb-20">
+			<main class="flex-1 flex flex-col">
+				<div class="max-w-4xl w-full mx-auto px-5 md:px-8 pt-8 pb-20 flex flex-col gap-6">
 					<slot />
 				</div>
-
-				<Footer />
 			</main>
+			<Footer />
 		</div>
 	</body>
 </html>
