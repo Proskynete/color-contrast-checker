@@ -81,7 +81,7 @@ export const ColorPickerSection = ({
 				{show && (
 					<div
 						ref={modalRef}
-						className="w-full h-[19rem] z-50 fixed grid bottom-0 right-0 p-5 bg-white border transition duration-300 md:max-h-fit mx-auto md:w-72 md:p-3 md:absolute md:rounded-lg md:shadow-lg md:bottom-0 md:-right-72"
+						className="w-full h-[19rem] z-50 fixed grid bottom-0 right-0 p-5 bg-white border transition duration-300 md:max-h-fit mx-auto md:w-72 md:p-3 md:absolute md:rounded-lg md:shadow-lg md:top-full md:left-0 md:mt-1 md:bottom-auto md:right-auto"
 					>
 						<ColorPickerModal fieldName={fieldName} />
 						<Input
