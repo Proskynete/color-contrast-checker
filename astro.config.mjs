@@ -9,4 +9,7 @@ export default defineConfig({
 	output: 'server',
 	adapter: vercel(),
 	integrations: [clerk(), tailwind(), react()],
+	build: {
+		assets: '_astro',
+	},
 });
