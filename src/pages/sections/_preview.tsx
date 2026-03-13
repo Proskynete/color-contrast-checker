@@ -7,17 +7,31 @@ export const Preview = () => {
 	const $text = useStore(textStore);
 
 	return (
-		<div
-			className="w-full md:w-1/2 flex flex-col justify-center p-8 md:rounded-r-xl rounded-b-xl md:rounded-b-none min-h-52"
-			style={{ color: `#${$text}`, backgroundColor: `#${$background}` }}
-		>
-			<p className="text-3xl font-semibold mb-2 leading-tight">The quick brown fox</p>
-			<p className="text-base mb-3 leading-relaxed opacity-90">
-				Aa — Contrast ratio preview for body text at normal size.
-			</p>
-			<p className="text-xs leading-relaxed opacity-75">
-				Caption · Small text must meet 4.5:1 for WCAG AA compliance.
-			</p>
+		<div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
+			<p className="text-xs font-semibold text-[#6B7280] mb-3">Vista previa</p>
+			<div
+				className="rounded-lg p-5"
+				style={{ color: `#${$text}`, backgroundColor: `#${$background}` }}
+			>
+				<p className="text-2xl font-bold mb-2 leading-tight">Titulo de ejemplo</p>
+				<p className="text-sm mb-4 leading-relaxed opacity-90">
+					Este es un párrafo de ejemplo para visualizar cómo se ve el texto con esta combinación de colores. La legibilidad es fundamental para la accesibilidad web.
+				</p>
+				<div className="flex gap-2 flex-wrap">
+					<button
+						className="px-4 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-80"
+						style={{ backgroundColor: `#${$text}`, color: `#${$background}` }}
+					>
+						Boton primario
+					</button>
+					<button
+						className="px-4 py-2 rounded-lg text-sm font-semibold border transition-opacity hover:opacity-80"
+						style={{ borderColor: `#${$text}`, color: `#${$text}`, backgroundColor: 'transparent' }}
+					>
+						Boton secundario
+					</button>
+				</div>
+			</div>
 		</div>
 	);
 };

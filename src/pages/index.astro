@@ -29,28 +29,37 @@ if (clerkId) {
 ---
 
 <LandingLayout>
-	<!-- Color picker + preview card -->
-	<div class="bg-white border border-[#E2E0DA] rounded-xl overflow-hidden shadow-sm">
-		<div class="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-[#E2E0DA]">
+	<!-- Hero -->
+	<div class="text-center pt-2 pb-1">
+		<h1 class="text-4xl font-bold text-[#111827] tracking-tight">Contrast Checker</h1>
+		<p class="text-[#6B7280] mt-2 max-w-lg mx-auto text-sm leading-relaxed">
+			Verifica el contraste de tus colores según las pautas WCAG y obtiene sugerencias con IA para mejorar la accesibilidad.
+		</p>
+	</div>
+
+	<!-- Main 2-column grid -->
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+		<!-- Left column: Form + WCAG Results -->
+		<div class="flex flex-col gap-5">
 			<Form client:visible />
+			<ContrastResult client:visible />
+		</div>
+
+		<!-- Right column: Preview + AI Suggest -->
+		<div class="flex flex-col gap-5">
 			<Preview client:visible />
+			<AiSuggest
+				client:load
+				isSignedIn={isSignedIn}
+				plan={plan}
+				creditsUsed={creditsUsed}
+			/>
 		</div>
 	</div>
 
-	<!-- Results + AI -->
-	<div class="flex flex-col gap-4">
-		<ContrastResult client:visible />
-
-		<AiSuggest
-			client:load
-			isSignedIn={isSignedIn}
-			plan={plan}
-			creditsUsed={creditsUsed}
-		/>
-
-		<div class="flex items-center gap-3 justify-end">
-			<CheckHistory client:load isSignedIn={isSignedIn} plan={plan} />
-			<PaletteManager client:load isSignedIn={isSignedIn} plan={plan} />
-		</div>
+	<!-- History + Palette row -->
+	<div class="flex items-center gap-3 justify-end">
+		<CheckHistory client:load isSignedIn={isSignedIn} plan={plan} />
+		<PaletteManager client:load isSignedIn={isSignedIn} plan={plan} />
 	</div>
 </LandingLayout>

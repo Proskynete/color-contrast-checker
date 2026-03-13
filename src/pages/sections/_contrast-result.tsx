@@ -3,21 +3,19 @@ import { useStore } from "@nanostores/react";
 import { getContrastResults } from "../../helpers/contrast.helper";
 import { backgroundStore, textStore } from "../../store/values.store";
 
-const PASS_STYLES = "bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0]";
-const FAIL_STYLES = "bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA]";
-const WARN_STYLES = "bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]";
-
 function getBadgeStyle(value: string) {
-  if (value === "AAA" || value === "AA") return PASS_STYLES;
-  if (value === "A") return WARN_STYLES;
-  return FAIL_STYLES;
+  if (value === "AAA" || value === "AA") return "bg-green-100 text-green-700";
+  return "bg-red-100 text-red-600";
 }
 
-function getRatioColor(ratio: number) {
-  if (ratio >= 7) return "#16A34A";
-  if (ratio >= 4.5) return "#2563EB";
-  if (ratio >= 3) return "#D97706";
-  return "#DC2626";
+function getBadgeLabel(value: string) {
+  if (value === "AAA") return "AAA";
+  if (value === "AA") return "AA";
+  return "Fail";
+}
+
+function isPass(value: string) {
+  return value === "AA" || value === "AAA";
 }
 
 export const ContrastResult = () => {
@@ -29,31 +27,72 @@ export const ContrastResult = () => {
     background: `#${$background}`,
   });
 
+  const failing = ratio < 4.5;
+  const ratioBg = failing ? "#FFF5F5" : "#F0FFF4";
+  const ratioTextColor = failing ? "#DC2626" : "#16A34A";
+
+  const uiLevel = ratio >= 3 ? "AA" : "A";
+  const allLevels = [
+    ...levels,
+    { title: "Componentes UI", value: uiLevel },
+  ];
+
   return (
-    <div className="bg-white border border-[#E2E0DA] rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-      <div className="flex flex-col gap-1">
-        <div className="flex items-baseline gap-2">
-          <span
-            className="text-5xl font-bold tracking-tight"
-            style={{ fontFamily: 'var(--font-mono, monospace)', color: getRatioColor(ratio) }}
-          >
-            {ratio.toFixed(2)}
-          </span>
-          <span className="text-sm text-[#9C9A93]" style={{ fontFamily: 'var(--font-mono, monospace)' }}>:1</span>
-        </div>
-        <p className="text-sm font-medium text-[#1A1917]">{classification.title}</p>
-        <p className="text-xs text-[#9C9A93] max-w-64">{classification.detail}</p>
+    <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
+      <h2 className="text-sm font-semibold text-[#111827] mb-4">Resultados WCAG</h2>
+
+      {/* Ratio display */}
+      <div className="rounded-lg p-4 mb-4 text-center" style={{ backgroundColor: ratioBg }}>
+        <p
+          className="text-5xl font-bold tracking-tight"
+          style={{ fontFamily: 'var(--font-mono, monospace)', color: ratioTextColor }}
+        >
+          {ratio.toFixed(2)}:1
+        </p>
+        <p className="text-sm mt-1 font-medium" style={{ color: ratioTextColor }}>
+          {failing ? "No cumple con el mínimo requerido" : classification.title}
+        </p>
       </div>
 
-      <div className="flex flex-col gap-2 shrink-0">
-        {levels.map((level) => (
-          <div key={level.title} className="flex items-center justify-between gap-8">
-            <span className="text-xs text-[#6B6860] font-medium">{level.title}</span>
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${getBadgeStyle(level.value)}`}>
-              {level.value}
+      {/* Level rows */}
+      <div className="flex flex-col gap-2 mb-4">
+        {allLevels.map((level) => (
+          <div
+            key={level.title}
+            className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F9FAFB] border border-[#F3F4F6]"
+          >
+            <div className="flex items-center gap-2.5">
+              {isPass(level.value) ? (
+                <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M2 5l2.5 2.5 3.5-4" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              ) : (
+                <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M3 3l4 4M7 3l-4 4" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              )}
+              <span className="text-sm font-medium text-[#374151]">{level.title}</span>
+            </div>
+            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${getBadgeStyle(level.value)}`}>
+              {getBadgeLabel(level.value)}
             </span>
           </div>
         ))}
+      </div>
+
+      {/* WCAG requirements */}
+      <div className="pt-3 border-t border-[#F3F4F6]">
+        <p className="text-xs font-semibold text-[#6B7280] mb-1.5">Requisitos WCAG:</p>
+        <ul className="text-xs text-[#9CA3AF] space-y-0.5">
+          <li>• AA texto normal: 4.5:1</li>
+          <li>• AA texto grande: 3:1</li>
+          <li>• AAA texto normal: 7:1</li>
+          <li>• AAA texto grande: 4.5:1</li>
+        </ul>
       </div>
     </div>
   );

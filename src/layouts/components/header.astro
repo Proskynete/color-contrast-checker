@@ -2,19 +2,19 @@
 import { Show, SignInButton, UserButton } from '@clerk/astro/components';
 ---
 
-<header class="w-full border-b border-[#E2E0DA] bg-white">
-	<div class="max-w-4xl w-full mx-auto px-5 md:px-8 h-14 flex items-center justify-between">
-		<div class="flex items-center gap-3">
-			<div class="w-7 h-7 rounded-md bg-[#1A1917] flex items-center justify-center">
+<header class="w-full border-b border-[#E5E7EB] bg-white">
+	<div class="max-w-5xl w-full mx-auto px-5 md:px-8 h-14 flex items-center justify-between">
+		<div class="flex items-center gap-2.5">
+			<div class="w-7 h-7 rounded-md bg-[#111827] flex items-center justify-center shrink-0">
 				<span class="text-white text-xs font-bold tracking-tight" style="font-family: var(--font-mono, monospace)">C3</span>
 			</div>
-			<span class="text-sm font-medium text-[#1A1917] hidden sm:block">Color Contrast Checker</span>
+			<span class="text-sm font-semibold text-[#111827] hidden sm:block">Color Contrast Checker</span>
 		</div>
 
 		<div class="flex items-center gap-2">
 			<Show when="signed-out">
 				<SignInButton mode="modal" asChild>
-					<button data-clerk-sign-in class="h-8 px-3 text-xs font-medium rounded-md border border-[#E2E0DA] bg-white text-[#1A1917] hover:bg-[#F7F6F3] transition-colors">
+					<button data-clerk-sign-in class="h-8 px-4 text-xs font-semibold rounded-lg border border-[#E5E7EB] bg-white text-[#374151] hover:bg-[#F9FAFB] hover:border-[#D1D5DB] transition-colors">
 						Sign in
 					</button>
 				</SignInButton>

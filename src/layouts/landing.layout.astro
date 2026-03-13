@@ -32,20 +32,20 @@ import Footer from './components/footer.astro';
 
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
 		<style>
 			:root {
 				--font-sans: 'DM Sans', system-ui, sans-serif;
 				--font-mono: 'DM Mono', 'Fira Code', monospace;
-				--bg: #F7F6F3;
+				--bg: #F3F4F6;
 				--surface: #FFFFFF;
-				--border: #E2E0DA;
-				--border-strong: #C9C7BF;
-				--text-primary: #1A1917;
-				--text-secondary: #6B6860;
-				--text-tertiary: #9C9A93;
-				--accent: #1A1917;
+				--border: #E5E7EB;
+				--border-strong: #D1D5DB;
+				--text-primary: #111827;
+				--text-secondary: #374151;
+				--text-tertiary: #6B7280;
+				--text-muted: #9CA3AF;
 			}
 			* { box-sizing: border-box; }
 			body {
@@ -61,8 +61,8 @@ import Footer from './components/footer.astro';
 	<body>
 		<div class="min-h-screen flex flex-col">
 			<Header />
-			<main class="flex-1 flex flex-col">
-				<div class="max-w-4xl w-full mx-auto px-5 md:px-8 pt-8 pb-20 flex flex-col gap-6">
+			<main class="flex-1">
+				<div class="max-w-5xl w-full mx-auto px-5 md:px-8 pt-8 pb-20 flex flex-col gap-5">
 					<slot />
 				</div>
 			</main>
