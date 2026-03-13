@@ -43,7 +43,7 @@ if (clerkId) {
 		<!-- Left column: compact controls -->
 		<div class="flex flex-col gap-5">
 			<Form client:visible />
-			<ContrastResult client:visible />
+			<ContrastResult client:visible isSignedIn={isSignedIn} />
 			<AiSuggest
 				client:load
 				isSignedIn={isSignedIn}

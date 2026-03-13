@@ -37,6 +37,16 @@ export const Form = () => {
 
   const ratio = contrastRatio({ text: `#${$text}`, background: `#${$background}` });
 
+  // Pre-fill from URL query params (?text=RRGGBB&bg=RRGGBB)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const text = params.get('text');
+    const bg = params.get('bg');
+    const hexRe = /^[0-9A-Fa-f]{6}$/;
+    if (text && hexRe.test(text)) textStore.set(text.toUpperCase());
+    if (bg && hexRe.test(bg)) backgroundStore.set(bg.toUpperCase());
+  }, []);
+
   // Auto-save to history with debounce
   useEffect(() => {
     if ($text.length === 6 && $background.length === 6) {

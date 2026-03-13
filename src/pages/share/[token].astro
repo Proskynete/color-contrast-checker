@@ -1,0 +1,166 @@
+---
+import { sql } from '../../db/client';
+import LandingLayout from '../../layouts/landing.layout.astro';
+
+const { token } = Astro.params;
+
+if (!token) {
+	return Astro.redirect('/');
+}
+
+type CheckRow = {
+	text_color: string;
+	bg_color: string;
+	ratio: string;
+	wcag_level: string;
+	ai_assisted: boolean;
+	share_expires_at: string | null;
+	created_at: string;
+};
+
+const rows = (await sql.query(
+	`SELECT text_color, bg_color, ratio, wcag_level, ai_assisted, share_expires_at, created_at
+	 FROM checks
+	 WHERE share_token = $1`,
+	[token],
+)) as CheckRow[];
+
+const notFound = rows.length === 0;
+const expired = !notFound && rows[0].share_expires_at !== null && new Date(rows[0].share_expires_at) < new Date();
+const check = rows[0];
+
+const ratio = check ? parseFloat(check.ratio) : 0;
+const textColor = check?.text_color ?? '#383838';
+const bgColor = check?.bg_color ?? '#FFFFFF';
+
+function wcagSmall(r: number) {
+	if (r >= 7) return 'AAA';
+	if (r >= 4.5) return 'AA';
+	return 'Fail';
+}
+
+function wcagLarge(r: number) {
+	if (r >= 4.5) return 'AAA';
+	if (r >= 3) return 'AA';
+	return 'Fail';
+}
+
+const smallLevel = wcagSmall(ratio);
+const largeLevel = wcagLarge(ratio);
+const uiLevel = ratio >= 3 ? 'AA' : 'Fail';
+
+const isPass = (v: string) => v === 'AA' || v === 'AAA';
+
+const tryItUrl = `/?text=${textColor.replace('#', '')}&bg=${bgColor.replace('#', '')}`;
+---
+
+<LandingLayout>
+	<div class="max-w-md mx-auto py-4">
+
+		{notFound && (
+			<div class="bg-white rounded-xl border border-[#E5E7EB] p-10 text-center">
+				<p class="text-4xl mb-4">🔍</p>
+				<h1 class="text-lg font-semibold text-[#111827] mb-2">Check not found</h1>
+				<p class="text-sm text-[#6B7280] mb-6">This shared link doesn't exist or has been removed.</p>
+				<a href="/" class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#111827] border border-[#E5E7EB] rounded-lg px-4 py-2 hover:bg-[#F9FAFB] transition-colors">
+					← Back to checker
+				</a>
+			</div>
+		)}
+
+		{expired && (
+			<div class="bg-white rounded-xl border border-[#E5E7EB] p-10 text-center">
+				<p class="text-4xl mb-4">⏰</p>
+				<h1 class="text-lg font-semibold text-[#111827] mb-2">Link expired</h1>
+				<p class="text-sm text-[#6B7280] mb-6">Free plan share links expire after 7 days. Upgrade to Pro for permanent links.</p>
+				<a href="/" class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#111827] border border-[#E5E7EB] rounded-lg px-4 py-2 hover:bg-[#F9FAFB] transition-colors">
+					← Back to checker
+				</a>
+			</div>
+		)}
+
+		{!notFound && !expired && (
+			<div class="flex flex-col gap-4">
+				<!-- Header -->
+				<div class="text-center pb-1">
+					<p class="text-xs text-[#9CA3AF] uppercase tracking-wider font-semibold mb-2">Shared contrast check</p>
+					<p class="text-5xl font-bold text-[#111827] tracking-tight" style="font-family: var(--font-mono)">{ratio.toFixed(2)}:1</p>
+					<p class="text-sm text-[#6B7280] mt-2">
+						{check.ai_assisted && <span class="mr-1">✨ AI-assisted ·</span>}
+						{new Date(check.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+					</p>
+				</div>
+
+				<!-- Color preview -->
+				<div class="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
+					<div class="h-28 flex items-center justify-center gap-4" style={`color: ${textColor}; background-color: ${bgColor}`}>
+						<span class="text-4xl font-bold leading-none">Aa</span>
+						<span class="text-base leading-snug max-w-[160px]">Sample text for readability</span>
+					</div>
+					<div class="flex border-t border-[#E5E7EB] divide-x divide-[#E5E7EB]">
+						<div class="flex-1 flex items-center gap-2.5 px-4 py-3">
+							<div class="w-5 h-5 rounded border border-[#E5E7EB] shrink-0" style={`background:${textColor}`}></div>
+							<div>
+								<p class="text-[10px] text-[#9CA3AF] uppercase tracking-wider">Text</p>
+								<p class="text-xs font-semibold text-[#111827]" style="font-family: var(--font-mono)">{textColor.toUpperCase()}</p>
+							</div>
+						</div>
+						<div class="flex-1 flex items-center gap-2.5 px-4 py-3">
+							<div class="w-5 h-5 rounded border border-[#E5E7EB] shrink-0" style={`background:${bgColor}`}></div>
+							<div>
+								<p class="text-[10px] text-[#9CA3AF] uppercase tracking-wider">Background</p>
+								<p class="text-xs font-semibold text-[#111827]" style="font-family: var(--font-mono)">{bgColor.toUpperCase()}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- WCAG levels -->
+				<div class="bg-white rounded-xl border border-[#E5E7EB] p-5">
+					<p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-3">WCAG Results</p>
+					<div class="flex flex-col gap-2">
+						{[
+							{ label: 'Small Text', value: smallLevel },
+							{ label: 'Large Text', value: largeLevel },
+							{ label: 'UI Components', value: uiLevel },
+						].map(({ label, value }) => (
+							<div class="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F9FAFB] border border-[#F3F4F6]">
+								<div class="flex items-center gap-2.5">
+									{isPass(value) ? (
+										<div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+											<svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+												<path d="M2 5l2.5 2.5 3.5-4" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+											</svg>
+										</div>
+									) : (
+										<div class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+											<svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+												<path d="M3 3l4 4M7 3l-4 4" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+											</svg>
+										</div>
+									)}
+									<span class="text-sm font-medium text-[#374151]">{label}</span>
+								</div>
+								<span class={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isPass(value) ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+									{value}
+								</span>
+							</div>
+						))}
+					</div>
+				</div>
+
+				<!-- CTA -->
+				<a
+					href={tryItUrl}
+					class="flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1F2937] text-white text-sm font-semibold py-3 rounded-xl transition-colors"
+				>
+					Try it yourself →
+				</a>
+
+				<p class="text-center text-xs text-[#9CA3AF]">
+					Shared via <a href="/" class="underline hover:text-[#6B7280] transition-colors">C3 — Color Contrast Checker</a>
+				</p>
+			</div>
+		)}
+	</div>
+</LandingLayout>
