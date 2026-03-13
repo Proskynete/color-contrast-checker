@@ -6,6 +6,7 @@ import { ContrastResult } from './sections/_contrast-result.tsx';
 import { Form } from './sections/_form.tsx';
 import { PaletteManager } from './sections/_palette-manager.tsx';
 import { Preview } from './sections/_preview.tsx';
+import { TeamManager } from './sections/_team-manager.tsx';
 import { ToolsPanel } from './sections/_tools-panel.tsx';
 import { sql } from '../db/client';
 
@@ -14,6 +15,9 @@ const { userId: clerkId } = Astro.locals.auth();
 let isSignedIn = false;
 let plan = 'free';
 let creditsUsed = 0;
+let teamId: string | null = null;
+let teamRole: string | null = null;
+let teamStatus: string | null = null;
 
 if (clerkId) {
 	isSignedIn = true;
@@ -25,6 +29,24 @@ if (clerkId) {
 	if (rows.length) {
 		plan = rows[0].plan;
 		creditsUsed = rows[0].ai_credits_used;
+	}
+
+	if (plan === 'teams') {
+		const teamRows = await sql.query(
+			`SELECT t.id, t.status, tm.role
+			 FROM teams t
+			 JOIN team_members tm ON t.id = tm.team_id
+			 JOIN users u ON u.id = tm.user_id
+			 WHERE u.clerk_id = $1 AND t.status != 'deleted'
+			 LIMIT 1`,
+			[clerkId],
+		) as { id: string; status: string; role: string }[];
+
+		if (teamRows.length) {
+			teamId = teamRows[0].id;
+			teamStatus = teamRows[0].status;
+			teamRole = teamRows[0].role;
+		}
 	}
 }
 ---
@@ -59,9 +81,17 @@ if (clerkId) {
 		</div>
 	</div>
 
-	<!-- History + Palette row -->
+	<!-- History + Palette + Team row -->
 	<div class="flex items-center gap-3 justify-end">
 		<CheckHistory client:load isSignedIn={isSignedIn} plan={plan} />
-		<PaletteManager client:load isSignedIn={isSignedIn} plan={plan} />
+		<PaletteManager
+			client:load
+			isSignedIn={isSignedIn}
+			plan={plan}
+			teamId={teamId}
+			teamRole={teamRole}
+			teamStatus={teamStatus}
+		/>
+		<TeamManager client:load isSignedIn={isSignedIn} plan={plan} />
 	</div>
 </LandingLayout>

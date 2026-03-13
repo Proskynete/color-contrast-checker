@@ -13,25 +13,40 @@ type Palette = {
 type Props = {
   isSignedIn: boolean;
   plan: string;
+  teamId?: string | null;
+  teamRole?: string | null;
+  teamStatus?: string | null;
 };
 
-export const PaletteManager = ({ isSignedIn, plan }: Props) => {
+export const PaletteManager = ({ isSignedIn, plan, teamId = null, teamRole = null, teamStatus = null }: Props) => {
   const currentText = useStore(textStore);
   const currentBg = useStore(backgroundStore);
+  const [tab, setTab] = useState<'personal' | 'team'>('personal');
   const [palettes, setPalettes] = useState<Palette[]>([]);
+  const [teamPalettes, setTeamPalettes] = useState<Palette[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newName, setNewName] = useState('');
   const [saving, setSaving] = useState(false);
 
   const isPro = plan === 'pro' || plan === 'teams';
+  const hasTeam = !!teamId;
+  const isTeamOwner = teamRole === 'owner';
+  const isTeamFrozen = teamStatus === 'frozen';
 
   const fetchPalettes = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/palettes');
-      const data = await res.json();
-      if (res.ok) setPalettes(data.palettes ?? []);
+      const [personalRes, teamRes] = await Promise.all([
+        fetch('/api/palettes'),
+        hasTeam ? fetch(`/api/teams/${teamId}/palettes`) : Promise.resolve(null),
+      ]);
+      const personalData = await personalRes.json();
+      if (personalRes.ok) setPalettes(personalData.palettes ?? []);
+      if (teamRes) {
+        const teamData = await teamRes.json();
+        if (teamRes.ok) setTeamPalettes(teamData.palettes ?? []);
+      }
     } finally {
       setLoading(false);
     }
@@ -46,14 +61,17 @@ export const PaletteManager = ({ isSignedIn, plan }: Props) => {
     if (!newName.trim()) return;
     setSaving(true);
     try {
-      const res = await fetch('/api/palettes', {
+      const isTeamTab = tab === 'team' && hasTeam && isTeamOwner && !isTeamFrozen;
+      const url = isTeamTab ? `/api/teams/${teamId}/palettes` : '/api/palettes';
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newName.trim(), colors: [`#${currentText}`, `#${currentBg}`] }),
       });
       if (res.ok) {
         const palette = await res.json();
-        setPalettes((prev) => [palette, ...prev]);
+        if (isTeamTab) setTeamPalettes((prev) => [palette, ...prev]);
+        else setPalettes((prev) => [palette, ...prev]);
         setNewName('');
       }
     } finally {
@@ -62,8 +80,13 @@ export const PaletteManager = ({ isSignedIn, plan }: Props) => {
   };
 
   const deletePalette = async (id: string) => {
-    await fetch(`/api/palettes/${id}`, { method: 'DELETE' });
-    setPalettes((prev) => prev.filter((p) => p.id !== id));
+    if (tab === 'team' && hasTeam) {
+      await fetch(`/api/teams/${teamId}/palettes/${id}`, { method: 'DELETE' });
+      setTeamPalettes((prev) => prev.filter((p) => p.id !== id));
+    } else {
+      await fetch(`/api/palettes/${id}`, { method: 'DELETE' });
+      setPalettes((prev) => prev.filter((p) => p.id !== id));
+    }
   };
 
   const applyPalette = (palette: Palette) => {
@@ -91,37 +114,69 @@ export const PaletteManager = ({ isSignedIn, plan }: Props) => {
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
             </div>
 
-            {/* Save current colors */}
-            <div className="px-5 py-3 border-b border-gray-100 flex gap-2">
-              <div className="flex gap-1 items-center flex-shrink-0">
-                <div className="w-5 h-5 rounded border border-gray-200" style={{ backgroundColor: `#${currentText}` }} />
-                <div className="w-5 h-5 rounded border border-gray-200" style={{ backgroundColor: `#${currentBg}` }} />
+            {/* Tabs — only shown when user has a team */}
+            {hasTeam && (
+              <div className="flex border-b border-gray-100">
+                {(['personal', 'team'] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => { setTab(t); setNewName(''); }}
+                    className={`flex-1 py-2.5 text-xs font-semibold transition-colors capitalize ${
+                      tab === t
+                        ? 'text-[#111827] border-b-2 border-[#111827]'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    {t === 'team' ? `Team` : 'Personal'}
+                  </button>
+                ))}
               </div>
-              <input
-                type="text"
-                placeholder="Palette name…"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && savePalette()}
-                className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                onClick={savePalette}
-                disabled={saving || !newName.trim()}
-                className="text-sm px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-              >
-                Save
-              </button>
-            </div>
+            )}
+
+            {/* Frozen warning */}
+            {tab === 'team' && isTeamFrozen && (
+              <div className="px-5 py-2 bg-amber-50 border-b border-amber-100">
+                <p className="text-xs text-amber-700">Team is frozen — palettes are read-only.</p>
+              </div>
+            )}
+
+            {/* Save current colors */}
+            {(tab === 'personal' || (tab === 'team' && isTeamOwner && !isTeamFrozen)) && (
+              <div className="px-5 py-3 border-b border-gray-100 flex gap-2">
+                <div className="flex gap-1 items-center flex-shrink-0">
+                  <div className="w-5 h-5 rounded border border-gray-200" style={{ backgroundColor: `#${currentText}` }} />
+                  <div className="w-5 h-5 rounded border border-gray-200" style={{ backgroundColor: `#${currentBg}` }} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Palette name…"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && savePalette()}
+                  className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <button
+                  onClick={savePalette}
+                  disabled={saving || !newName.trim()}
+                  className="text-sm px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                >
+                  Save
+                </button>
+              </div>
+            )}
 
             <div className="overflow-y-auto max-h-80">
               {loading && <p className="text-sm text-center text-gray-500 py-6">Loading…</p>}
 
-              {!loading && palettes.length === 0 && (
+              {!loading && tab === 'personal' && palettes.length === 0 && (
                 <p className="text-sm text-center text-gray-500 py-6">No palettes saved yet</p>
               )}
 
-              {!loading && palettes.map((palette) => (
+              {!loading && tab === 'team' && teamPalettes.length === 0 && (
+                <p className="text-sm text-center text-gray-500 py-6">No team palettes yet</p>
+              )}
+
+              {!loading && (tab === 'personal' ? palettes : teamPalettes).map((palette) => (
                 <div key={palette.id} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 border-b border-gray-50 last:border-0">
                   <button onClick={() => applyPalette(palette)} className="flex items-center gap-3 flex-1 text-left">
                     <div className="flex gap-1 flex-shrink-0">
@@ -131,12 +186,14 @@ export const PaletteManager = ({ isSignedIn, plan }: Props) => {
                     </div>
                     <p className="text-sm font-medium text-gray-800">{palette.name}</p>
                   </button>
-                  <button
-                    onClick={() => deletePalette(palette.id)}
-                    className="text-gray-300 hover:text-red-400 transition-colors text-lg leading-none flex-shrink-0"
-                  >
-                    ×
-                  </button>
+                  {(tab === 'personal' || (isTeamOwner && !isTeamFrozen)) && (
+                    <button
+                      onClick={() => deletePalette(palette.id)}
+                      className="text-gray-300 hover:text-red-400 transition-colors text-lg leading-none flex-shrink-0"
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
