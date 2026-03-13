@@ -1,7 +1,7 @@
 {
 	"name": "color-contrast-checker",
 	"description": "Calculate the contrast ratio of text and background colors",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"type": "module",
 	"license": "MIT",
 	"scripts": {
