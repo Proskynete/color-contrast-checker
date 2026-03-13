@@ -10,9 +10,10 @@ C3 is a free single-page contrast checker with strong organic traffic potential,
 - **Add subscription billing** (Lemon Squeezy) — Free / Pro ($9/mo) / Teams ($29/mo) tiers with Lemon Squeezy checkout, webhooks, pricing page, and customer billing portal ✅ *(billing provider changed from Stripe to Lemon Squeezy)*
 - **Add shareable check URLs** — authenticated Free users get 7-day expiry links; Pro/Teams get permanent links; share page, share button, and URL pre-fill all implemented ✅
 - **Add saved palettes** — personal (Pro, up to 10) and shared team brand palettes (Teams, unlimited) ✅
-- **Add bulk checker** (Teams) — CSV upload of color pairs, batch WCAG results *(Phase 3 — pending)*
-- **Add PDF/WCAG reports** (Teams) — downloadable audit reports *(Phase 3 — pending)*
-- **Add team collaboration** (Teams) — up to 5 users, shared palettes, owner/member roles *(Phase 3 — pending)*
+- **Add bulk checker** (Teams) — CSV upload of color pairs, client-side batch WCAG calculation, paginated results table, PDF export ✅
+- **Add PDF/WCAG reports** (Teams) — downloadable audit PDFs for check history and bulk checker results via jspdf ✅
+- **Add team collaboration** (Teams) — up to 5 users, shared palettes, owner/member roles, frozen team enforcement, 30-day cleanup cron ✅
+- **Add AI palette generator** — GPT-4o-mini generates full 8-role accessible color system from a brand color; save to personal or team palettes ✅
 - **Switch Astro to SSR mode** — required for server-side API routes handling auth, AI, and webhooks ✅
 - **Fix 3 existing bugs** — background color picker bug, footer typo, landing layout meta tag issues ✅
 - **Redesign UI** — asymmetric 1fr/2fr grid layout, tools panel with 5 tabs (palette, color history, export, daltonism simulation), RGB/HSL display, color history, real logo in header ✅
@@ -29,9 +30,10 @@ C3 is a free single-page contrast checker with strong organic traffic potential,
 - `ai-color-correction`: OpenAI GPT-4o-mini endpoint that suggests 3 WCAG-compliant color corrections for failing checks; credit system, rate limiting, algorithmic fallback ✅ *(was Claude Haiku)*
 - `saved-palettes`: Personal and team brand palette storage; Pro limit of 10, Teams unlimited with shared access ✅
 - `ui-tools-panel`: Tools panel with 5 tabs — color palette harmony generator, color history, palette export, daltonism simulation, RGB/HSL display ✅
-- `team-collaboration`: Team creation, member invitations (up to 5 users), shared palettes, owner/member roles, downgrade handling *(Phase 3 — pending)*
-- `bulk-checker`: CSV upload of color pairs with batch WCAG results (Teams tier) *(Phase 3 — pending)*
-- `pdf-reports`: Downloadable WCAG audit PDF reports (Teams tier) *(Phase 3 — pending)*
+- `team-collaboration`: Team creation, member invitations (up to 5 users), shared palettes, owner/member roles, downgrade handling, Vercel cron for 30-day frozen team deletion ✅
+- `bulk-checker`: CSV upload with drag-and-drop, client-side batch WCAG calculation, paginated table (50/page), WCAG badges, PDF export; Teams-only with upsell for Free/Pro ✅
+- `pdf-reports`: Client-side PDF export via `jspdf` + `jspdf-autotable`; available in check history and bulk checker (Teams only) ✅
+- `ai-palette-generator`: OpenAI GPT-4o-mini generates 8-role accessible palette (primary, secondary, background, text variants) from a brand color; contrast ratio annotations; save to personal or team palettes ✅
 
 ### Modified Capabilities
 
@@ -40,9 +42,9 @@ C3 is a free single-page contrast checker with strong organic traffic potential,
 ## Impact
 
 - **Astro config**: `output: 'server'` + SSR adapter required
-- **New API routes**: `/api/checks`, `/api/checks/[token]`, `/api/ai-suggest`, `/api/lemonsqueezy/checkout`, `/api/lemonsqueezy/webhook`, `/api/lemonsqueezy/portal`, `/api/palettes`, `/api/palettes/[id]`, `/api/clerk/webhook` ✅
+- **New API routes**: `/api/checks`, `/api/checks/[token]`, `/api/ai-suggest`, `/api/ai-palette`, `/api/lemonsqueezy/checkout`, `/api/lemonsqueezy/webhook`, `/api/lemonsqueezy/portal`, `/api/palettes`, `/api/palettes/[id]`, `/api/clerk/webhook`, `/api/teams`, `/api/teams/[id]`, `/api/teams/[id]/invite`, `/api/teams/[id]/palettes`, `/api/teams/[id]/palettes/[paletteId]`, `/api/cron/cleanup-teams` ✅
 - **New pages**: `/share/[token]` (public share card), `/pricing` (tier comparison + upgrade CTAs) ✅
-- **New dependencies**: `@clerk/astro`, `@neondatabase/serverless`, `openai`, `@lemonsqueezy/lemonsqueezy.js` ✅ *(was `@anthropic-ai/sdk` + `stripe`)*
+- **New dependencies**: `@clerk/astro`, `@neondatabase/serverless`, `openai`, `@lemonsqueezy/lemonsqueezy.js`, `jspdf`, `jspdf-autotable` ✅ *(was `@anthropic-ai/sdk` + `stripe`)*
 - **Astro**: Downgraded to v5 (v6 had build issues with Vercel adapter); uses `@astrojs/vercel` adapter (not `@astrojs/node`) ✅
 - **Environment variables**: Clerk keys, Neon connection string, OpenAI API key, Lemon Squeezy keys + webhook secret ✅
 - **Existing `.env`**: Legacy Supabase credentials removed ✅
