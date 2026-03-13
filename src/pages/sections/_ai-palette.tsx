@@ -22,18 +22,15 @@ const ROLE_META: Record<string, { label: string; description: string }> = {
   primary: { label: 'Primary', description: 'Brand color' },
   primary_text: { label: 'On Primary', description: 'Text on primary' },
   secondary: { label: 'Secondary', description: 'Accent color' },
-  secondary_text: { label: 'On Secondary', description: 'Text on secondary' },
   background: { label: 'Background', description: 'Page surface' },
-  surface: { label: 'Surface', description: 'Cards / modals' },
-  text_primary: { label: 'Text', description: 'Primary body text' },
-  text_secondary: { label: 'Text 2', description: 'Secondary body text' },
+  text_primary: { label: 'Text', description: 'Body text on background' },
 };
 
 const PREVIEW_PAIRS: Array<[string, string]> = [
   ['primary', 'primary_text'],
-  ['secondary', 'secondary_text'],
+  ['secondary', 'primary_text'],
   ['background', 'text_primary'],
-  ['surface', 'text_primary'],
+  ['primary', 'text_primary'],
 ];
 
 function wcagBadgeClass(ratio: number): string {
@@ -230,10 +227,10 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
                 {loading && (
                   <div className="flex-1 flex flex-col items-center justify-center py-16 gap-3">
                     <div className="flex gap-2">
-                      {[...Array(8)].map((_, i) => (
+                      {[...Array(5)].map((_, i) => (
                         <div
                           key={i}
-                          className="w-8 h-8 rounded-lg bg-gray-100 animate-pulse"
+                          className="w-10 h-10 rounded-lg bg-gray-100 animate-pulse"
                           style={{ animationDelay: `${i * 80}ms` }}
                         />
                       ))}
@@ -256,7 +253,7 @@ export const AiPalette = ({ isSignedIn, plan, teamId = null, teamRole = null, te
                 {!loading && palette && (
                   <div className="overflow-y-auto flex-1">
                     {/* Color swatches grid */}
-                    <div className="px-5 py-4 grid grid-cols-4 sm:grid-cols-8 gap-2">
+                    <div className="px-5 py-4 grid grid-cols-5 gap-3">
                       {roleList.map((role) => (
                         <div key={role.key} className="flex flex-col items-center gap-1">
                           <div

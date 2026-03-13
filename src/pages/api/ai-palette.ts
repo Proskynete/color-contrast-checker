@@ -104,44 +104,33 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
 Given brand color: ${brandColor}
 
-Generate a complete accessible UI color palette with these 8 named roles:
+Generate a minimal accessible UI color palette with exactly these 5 named roles:
 - primary: the brand color itself
 - primary_text: text that appears ON primary (white or near-white for dark brands, dark for light brands)
-- secondary: a complementary or analogous accent color
-- secondary_text: text that appears ON secondary
+- secondary: a complementary or analogous accent color that pairs well with primary
 - background: a light neutral surface (should not overpower the brand)
-- surface: a slightly lighter or darker neutral for cards/modals
-- text_primary: main body text on background/surface (dark, high contrast)
-- text_secondary: secondary body text (slightly lighter, still readable)
+- text_primary: main body text that appears ON the background (dark, high contrast)
 
 Rules:
-- All combinations must meet WCAG AA (4.5:1 for normal text, 3:1 for large)
-- Primary + primary_text must have ratio ≥ 4.5
-- Secondary + secondary_text must have ratio ≥ 4.5
-- text_primary on background must have ratio ≥ 7 (AAA preferred)
-- text_secondary on background must have ratio ≥ 4.5
+- primary + primary_text must have contrast ratio ≥ 4.5 (WCAG AA)
+- text_primary on background must have contrast ratio ≥ 7 (WCAG AAA preferred)
+- secondary should be visually distinct from primary but harmonious
 
 Respond ONLY with valid JSON, no markdown:
 {
   "primary": "#hexcode",
   "primary_text": "#hexcode",
   "secondary": "#hexcode",
-  "secondary_text": "#hexcode",
   "background": "#hexcode",
-  "surface": "#hexcode",
-  "text_primary": "#hexcode",
-  "text_secondary": "#hexcode"
+  "text_primary": "#hexcode"
 }`;
 
   type PaletteResult = {
     primary: string;
     primary_text: string;
     secondary: string;
-    secondary_text: string;
     background: string;
-    surface: string;
     text_primary: string;
-    text_secondary: string;
   };
 
   let palette: PaletteResult | null = null;
@@ -179,9 +168,8 @@ Respond ONLY with valid JSON, no markdown:
   // Annotate each role with its contrast pair and ratio
   const annotations: Record<string, { against: string; ratio: number }> = {
     primary_text: { against: palette.primary, ratio: contrastRatio(palette.primary_text, palette.primary) },
-    secondary_text: { against: palette.secondary, ratio: contrastRatio(palette.secondary_text, palette.secondary) },
+    secondary: { against: palette.background, ratio: contrastRatio(palette.secondary, palette.background) },
     text_primary: { against: palette.background, ratio: contrastRatio(palette.text_primary, palette.background) },
-    text_secondary: { against: palette.background, ratio: contrastRatio(palette.text_secondary, palette.background) },
   };
 
   return new Response(
