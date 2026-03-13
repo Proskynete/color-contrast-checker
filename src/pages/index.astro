@@ -6,6 +6,7 @@ import { ContrastResult } from './sections/_contrast-result.tsx';
 import { Form } from './sections/_form.tsx';
 import { PaletteManager } from './sections/_palette-manager.tsx';
 import { Preview } from './sections/_preview.tsx';
+import { ToolsPanel } from './sections/_tools-panel.tsx';
 import { sql } from '../db/client';
 
 const { userId: clerkId } = Astro.locals.auth();
@@ -37,23 +38,28 @@ if (clerkId) {
 		</p>
 	</div>
 
-	<!-- Main 2-column grid -->
-	<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-		<!-- Left column: Form + WCAG Results -->
+	<!-- Main 3-column grid -->
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+		<!-- Left column: Form + WCAG Results + AI Suggest -->
 		<div class="flex flex-col gap-5">
 			<Form client:visible />
 			<ContrastResult client:visible />
-		</div>
-
-		<!-- Right column: Preview + AI Suggest -->
-		<div class="flex flex-col gap-5">
-			<Preview client:visible />
 			<AiSuggest
 				client:load
 				isSignedIn={isSignedIn}
 				plan={plan}
 				creditsUsed={creditsUsed}
 			/>
+		</div>
+
+		<!-- Center column: Preview -->
+		<div class="flex flex-col gap-5">
+			<Preview client:visible />
+		</div>
+
+		<!-- Right column: Tools Panel -->
+		<div>
+			<ToolsPanel client:load />
 		</div>
 	</div>
 
