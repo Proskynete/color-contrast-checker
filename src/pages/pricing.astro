@@ -198,7 +198,7 @@ const teamsMonthlyId = import.meta.env.PUBLIC_LEMONSQUEEZY_TEAMS_MONTHLY_VARIANT
 	</div>
 </LandingLayout>
 
-<script define:vars={{ isSignedIn }}>
+<script is:inline define:vars={{ isSignedIn }}>
 	// Upgrade buttons
 	document.querySelectorAll('.upgrade-btn').forEach((btn) => {
 		btn.addEventListener('click', async () => {
