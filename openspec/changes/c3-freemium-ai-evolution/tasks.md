@@ -116,12 +116,12 @@
 
 ## 11. Team Collaboration (Phase 3)
 
-- [ ] 11.1 Create `POST /api/teams` endpoint — creates team, inserts owner into `team_members`, requires Teams plan
-- [ ] 11.2 Create `POST /api/teams/[id]/invite` endpoint — adds member, enforces 5-user cap (HTTP 403 `team_member_limit_reached`)
-- [ ] 11.3 Build team creation and invitation UI
-- [ ] 11.4 Build shared brand palettes UI — list and manage team-level palettes (Teams only)
-- [ ] 11.5 Implement frozen team read-only enforcement — block write operations on frozen teams (HTTP 403 `team_frozen`)
-- [ ] 11.6 Implement 30-day deletion job for frozen teams (scheduled via Vercel cron or Neon background job)
+- [x] 11.1 Create `POST /api/teams` endpoint — creates team, inserts owner into `team_members`, requires Teams plan
+- [x] 11.2 Create `POST /api/teams/[id]/invite` endpoint — adds member, enforces 5-user cap (HTTP 403 `team_member_limit_reached`)
+- [x] 11.3 Build team creation and invitation UI
+- [x] 11.4 Build shared brand palettes UI — list and manage team-level palettes (Teams only)
+- [x] 11.5 Implement frozen team read-only enforcement — block write operations on frozen teams (HTTP 403 `team_frozen`)
+- [x] 11.6 Implement 30-day deletion job for frozen teams (scheduled via Vercel cron or Neon background job)
 
 ## 12. Bulk Checker (Phase 3)
 
