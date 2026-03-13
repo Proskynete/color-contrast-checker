@@ -1,5 +1,5 @@
 name: Report a bug
-description: Tell us about a bug or issue you may have identified in this library.
+description: Tell us about a bug or issue you may have identified in this app.
 title: "Provide a general summary of the issue"
 labels: [bug]
 body:

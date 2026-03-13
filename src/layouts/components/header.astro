@@ -1,0 +1,28 @@
+---
+import { Show, SignInButton, UserButton } from '@clerk/astro/components';
+import Typography from '../../components/typography.astro';
+---
+
+<header
+	class="w-full min-h-20 h-fit flex items-center justify-between px-5 py-5 xl:px-12 bg-gray-800 text-white"
+>
+	<div class="flex flex-col items-center flex-1">
+		<Typography as="h1" variant="title">Color Contrast Checker </Typography>
+		<Typography as="h2" variant="subtitle" class="text-white/60 text-sm">
+			Check the contrast ratio between text and background colors
+		</Typography>
+	</div>
+
+	<div class="flex items-center gap-2">
+		<Show when="signed-out">
+			<SignInButton mode="modal" asChild>
+				<button class="text-sm px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors">
+					Sign in
+				</button>
+			</SignInButton>
+		</Show>
+		<Show when="signed-in">
+			<UserButton />
+		</Show>
+	</div>
+</header>

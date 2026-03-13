@@ -1,0 +1,56 @@
+---
+import LandingLayout from '../layouts/landing.layout.astro';
+import { AiSuggest } from './sections/_ai-suggest.tsx';
+import { CheckHistory } from './sections/_check-history.tsx';
+import { ContrastResult } from './sections/_contrast-result.tsx';
+import { Form } from './sections/_form.tsx';
+import { PaletteManager } from './sections/_palette-manager.tsx';
+import { Preview } from './sections/_preview.tsx';
+import { sql } from '../db/client';
+
+const { userId: clerkId } = Astro.locals.auth();
+
+let isSignedIn = false;
+let plan = 'free';
+let creditsUsed = 0;
+
+if (clerkId) {
+	isSignedIn = true;
+	const rows = await sql.query(
+		`SELECT plan, ai_credits_used FROM users WHERE clerk_id = $1`,
+		[clerkId],
+	) as { plan: string; ai_credits_used: number }[];
+
+	if (rows.length) {
+		plan = rows[0].plan;
+		creditsUsed = rows[0].ai_credits_used;
+	}
+}
+---
+
+<LandingLayout>
+	<section class="border rounded-xl flex flex-col md:flex-row gap-5 divide-x">
+		<Form client:visible />
+		<Preview client:visible />
+	</section>
+
+	<section class="w-full lg:w-3/4 mx-auto flex flex-col gap-4">
+		<ContrastResult client:visible />
+
+		<AiSuggest
+			client:load
+			isSignedIn={isSignedIn}
+			plan={plan}
+			creditsUsed={creditsUsed}
+		/>
+
+		<div class="flex items-center gap-4 justify-end">
+			<CheckHistory client:load isSignedIn={isSignedIn} plan={plan} />
+			<PaletteManager
+				client:load
+				isSignedIn={isSignedIn}
+				plan={plan}
+			/>
+		</div>
+	</section>
+</LandingLayout>
