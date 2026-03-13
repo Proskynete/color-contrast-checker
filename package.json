@@ -26,6 +26,7 @@
 		"@neondatabase/serverless": "^1.0.2",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
+		"@typescript-eslint/parser": "^8.57.0",
 		"astro": "^5.18.1",
 		"nanoid": "^5.1.6",
 		"nanostores": "^0.10.3",

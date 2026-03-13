@@ -34,7 +34,7 @@ export const AiSuggest = ({ isSignedIn, plan, creditsUsed }: Props) => {
 
   const handleSuggest = async () => {
     if (!isSignedIn) {
-      window.location.href = '/sign-in';
+      document.querySelector<HTMLButtonElement>('[data-clerk-sign-in]')?.click();
       return;
     }
 
