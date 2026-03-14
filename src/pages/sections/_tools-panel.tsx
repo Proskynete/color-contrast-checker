@@ -1,7 +1,7 @@
 import { useStore } from '@nanostores/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-import { backgroundStore, textStore } from '../../store/values.store';
+import { textStore } from '../../store/values.store';
 import {
   generatePalette,
   lerpColor,
@@ -397,260 +397,359 @@ function TabGrad() {
   );
 }
 
-// ─── TAB 4: Tipo ────────────────────────────────────────────────────────────
+// ─── TAB 4: Img ─────────────────────────────────────────────────────────────
 
-const SIZES = [12, 14, 16, 18, 24, 32];
+type Marker = { x: number; y: number; hex: string }; // x/y: % of displayed container
 
-type SizeStatus = 'fail' | 'acceptable' | 'optimal';
-
-function getSizeStatus(px: number, ratio: number): SizeStatus {
-  if (px < 18) {
-    if (ratio >= 7) return 'optimal';
-    if (ratio >= 4.5) return 'acceptable';
-    return 'fail';
-  }
-  if (px < 24) {
-    if (ratio >= 4.5) return 'optimal';
-    if (ratio >= 3.0) return 'acceptable';
-    return 'fail';
-  }
-  // >= 24
-  if (ratio >= 3.0) return 'optimal';
-  return 'fail';
+/**
+ * Converts a position expressed as % of the displayed container to canvas pixel
+ * coordinates, compensating for the object-cover crop offset.
+ */
+function getCanvasCoords(
+  pctX: number, pctY: number,
+  cW: number, cH: number,
+  canvas: HTMLCanvasElement,
+): { x: number; y: number } {
+  const nW = canvas.width, nH = canvas.height;
+  const scale = Math.max(cW / nW, cH / nH);
+  const offX = (nW * scale - cW) / 2;
+  const offY = (nH * scale - cH) / 2;
+  return {
+    x: Math.max(0, Math.min(nW - 1, Math.round((pctX / 100 * cW + offX) / scale))),
+    y: Math.max(0, Math.min(nH - 1, Math.round((pctY / 100 * cH + offY) / scale))),
+  };
 }
 
-const STATUS_CONFIG: Record<SizeStatus, { dot: string; label: string; text: string }> = {
-  fail: { dot: 'bg-red-500', label: 'Not recommended', text: 'text-red-600' },
-  acceptable: { dot: 'bg-yellow-400', label: 'Acceptable', text: 'text-yellow-600' },
-  optimal: { dot: 'bg-green-500', label: 'Optimal', text: 'text-green-600' },
-};
-
-function TabTipo() {
-  const $text = useStore(textStore);
-  const $background = useStore(backgroundStore);
-  const ratio = contrastRatio({ text: `#${$text}`, background: `#${$background}` });
-
-  const sizes = SIZES.map(px => ({ px, status: getSizeStatus(px, ratio) }));
-
-  // Recommended: largest with 'optimo', or smallest green/aceptable
-  const optimos = sizes.filter(s => s.status === 'optimal');
-  const recommended = optimos.length > 0 ? optimos[optimos.length - 1] : sizes.find(s => s.status === 'acceptable');
-
-  // Minimum passing size
-  const minPassing = sizes.find(s => s.status !== 'fail');
-
-  return (
-    <div>
-      {/* Top recommendation */}
-      {recommended && (
-        <div className="bg-[#F0FDF4] border border-green-200 rounded-lg px-3 py-2 mb-3 flex items-center justify-between">
-          <span className="text-xs font-bold text-green-700">{recommended.px}px recommended</span>
-          <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded font-semibold">optimal</span>
-        </div>
-      )}
-
-      <p className="text-[10px] text-[#9CA3AF] mb-3 leading-relaxed">
-        Only valid for large text (18px+ or 14px bold).{' '}
-        {minPassing
-          ? `Minimum size: ${minPassing.px}px`
-          : 'No valid size with this contrast ratio.'}
-      </p>
-
-      {/* Size previews */}
-      <div className="flex flex-col gap-3 mb-4">
-        {sizes.map(({ px, status }) => {
-          const cfg = STATUS_CONFIG[status];
-          return (
-            <div key={px} className="flex items-baseline gap-2">
-              <div className="flex items-center gap-1.5 w-28 shrink-0">
-                <div className={`w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
-                <span className={`text-[10px] font-semibold ${cfg.text}`}>{cfg.label}</span>
-              </div>
-              <span
-                className="text-[#374151] leading-tight truncate"
-                style={{
-                  fontSize: `${px}px`,
-                  color: `#${$text}`,
-                  lineHeight: 1.2,
-                }}
-              >
-                Sample text
-              </span>
-              <span className="text-[10px] text-[#9CA3AF] ml-auto shrink-0">{px}px</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* WCAG rules */}
-      <div className="border-t border-[#E5E7EB] pt-3">
-        <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">WCAG</p>
-        <ul className="flex flex-col gap-1 text-[10px] text-[#6B7280]">
-          <li>• AA Normal (&lt;18px): ratio ≥ 4.5:1</li>
-          <li>• AA Large (≥18px o 14px bold): ratio ≥ 3.0:1</li>
-          <li>• AAA Normal: ratio ≥ 7.0:1</li>
-          <li>• AAA Large: ratio ≥ 4.5:1</li>
-        </ul>
-      </div>
-    </div>
-  );
+function pickColor(pctX: number, pctY: number, cW: number, cH: number, canvas: HTMLCanvasElement): string {
+  const { x, y } = getCanvasCoords(pctX, pctY, cW, cH, canvas);
+  const d = canvas.getContext('2d')!.getImageData(x, y, 1, 1).data;
+  return rgbToHex(d[0], d[1], d[2]);
 }
 
-// ─── TAB 5: Img ─────────────────────────────────────────────────────────────
+/**
+ * Finds dominant colors in the canvas and places each marker at the centroid
+ * of where that color appears, expressed as % of the displayed container.
+ */
+function extractMarkersFromCanvas(
+  canvas: HTMLCanvasElement, count: number,
+  cW: number, cH: number,
+): Marker[] {
+  const S = 80;
+  const tmp = document.createElement('canvas');
+  tmp.width = S; tmp.height = S;
+  tmp.getContext('2d')!.drawImage(canvas, 0, 0, S, S);
+  const data = tmp.getContext('2d')!.getImageData(0, 0, S, S).data;
 
-interface ExtractedColor {
-  hex: string;
-  percent: number;
-}
-
-function extractColors(imageEl: HTMLImageElement, maxColors = 8): ExtractedColor[] {
-  const canvas = document.createElement('canvas');
-  const size = 64;
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return [];
-  ctx.drawImage(imageEl, 0, 0, size, size);
-  const data = ctx.getImageData(0, 0, size, size).data;
-
-  const bins: Record<string, number> = {};
-  const quantize = (v: number) => Math.round(v / 8) * 8;
-
+  const q = (v: number) => Math.round(v / 20) * 20;
+  const bins: Record<string, { n: number; sx: number; sy: number }> = {};
   for (let i = 0; i < data.length; i += 4) {
-    const a = data[i + 3];
-    if (a < 128) continue;
-    const r = quantize(data[i]);
-    const g = quantize(data[i + 1]);
-    const b = quantize(data[i + 2]);
-    const key = `${r},${g},${b}`;
-    bins[key] = (bins[key] || 0) + 1;
+    if (data[i + 3] < 128) continue;
+    const key = `${q(data[i])},${q(data[i + 1])},${q(data[i + 2])}`;
+    const pi = i / 4;
+    if (!bins[key]) bins[key] = { n: 0, sx: 0, sy: 0 };
+    bins[key].n++;
+    bins[key].sx += (pi % S) / S * 100;  // centroid in natural image %
+    bins[key].sy += Math.floor(pi / S) / S * 100;
   }
 
-  const total = Object.values(bins).reduce((a, b) => a + b, 0) || 1;
-  return Object.entries(bins)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, maxColors)
-    .map(([key, count]) => {
-      const [r, g, b] = key.split(',').map(Number);
-      return { hex: rgbToHex(r, g, b), percent: Math.round((count / total) * 100) };
+  const nW = canvas.width, nH = canvas.height;
+  const scale = Math.max(cW / nW, cH / nH);
+  const offX = (nW * scale - cW) / 2;
+  const offY = (nH * scale - cH) / 2;
+
+  const sorted = Object.entries(bins).sort((a, b) => b[1].n - a[1].n);
+  const result: Marker[] = [];
+
+  for (const [key, { n, sx, sy }] of sorted) {
+    if (result.length >= count) break;
+    const [r, g, b] = key.split(',').map(Number);
+    const hex = rgbToHex(r, g, b);
+
+    // Skip colors too visually similar to ones already selected (Euclidean RGB distance)
+    const tooClose = result.some(m => {
+      const r2 = parseInt(m.hex.slice(0, 2), 16);
+      const g2 = parseInt(m.hex.slice(2, 4), 16);
+      const b2 = parseInt(m.hex.slice(4, 6), 16);
+      return Math.sqrt((r - r2) ** 2 + (g - g2) ** 2 + (b - b2) ** 2) < 40;
     });
+    if (tooClose) continue;
+
+    const dispX = Math.max(2, Math.min(98, (sx / n / 100 * nW * scale - offX) / cW * 100));
+    const dispY = Math.max(2, Math.min(98, (sy / n / 100 * nH * scale - offY) / cH * 100));
+    result.push({ hex, x: dispX, y: dispY });
+  }
+
+  return result;
 }
 
 function TabImg() {
-  const $background = useStore(backgroundStore);
-  const [colors, setColors] = useState<ExtractedColor[]>([]);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const [markers, setMarkers] = useState<Marker[]>([]);
+  const [maxColors, setMaxColors] = useState(5);
+  const [fileDragging, setFileDragging] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [exportCopied, setExportCopied] = useState(false);
+  const [canvasReady, setCanvasReady] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
-  const { copied, copy } = useCopy();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const dragMovedRef = useRef(false);
+
+  const openFilePicker = () => {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) processFile(file);
+    };
+    inp.click();
+  };
 
   const processFile = (file: File) => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = (e) => {
+      setCanvasReady(false);
+      setMarkers([]);
       setImgSrc(e.target?.result as string);
     };
     reader.readAsDataURL(file);
   };
 
-  useEffect(() => {
-    if (!imgSrc) return;
-    const img = new Image();
-    img.onload = () => {
-      const extracted = extractColors(img);
-      setColors(extracted);
-    };
-    img.src = imgSrc;
-  }, [imgSrc]);
+  const handleImgLoad = () => {
+    const canvas = canvasRef.current;
+    const img = imgRef.current;
+    const container = containerRef.current;
+    if (!canvas || !img || !container) return;
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(img, 0, 0);
+    setCanvasReady(true);
+    const { width: cW, height: cH } = container.getBoundingClientRect();
+    setMarkers(extractMarkersFromCanvas(canvas, Math.min(maxColors, 5), cW, cH));
+  };
+
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!canvasReady || !canvasRef.current || !containerRef.current) return;
+    if (markers.length >= maxColors || draggingIndex !== null || dragMovedRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const pctX = Math.max(0, Math.min(100, (e.clientX - rect.left) / rect.width * 100));
+    const pctY = Math.max(0, Math.min(100, (e.clientY - rect.top) / rect.height * 100));
+    const hex = pickColor(pctX, pctY, rect.width, rect.height, canvasRef.current);
+    setMarkers(prev => [...prev, { x: pctX, y: pctY, hex }]);
+  };
+
+  // Pointer events on markers — pointer capture keeps tracking even outside the container
+  const handleMarkerPointerDown = (e: React.PointerEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragMovedRef.current = false;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    setDraggingIndex(index);
+  };
+
+  const handleMarkerPointerMove = (e: React.PointerEvent, index: number) => {
+    if (draggingIndex !== index || !containerRef.current || !canvasRef.current) return;
+    dragMovedRef.current = true;
+    const rect = containerRef.current.getBoundingClientRect();
+    const pctX = Math.max(0, Math.min(100, (e.clientX - rect.left) / rect.width * 100));
+    const pctY = Math.max(0, Math.min(100, (e.clientY - rect.top) / rect.height * 100));
+    const hex = pickColor(pctX, pctY, rect.width, rect.height, canvasRef.current);
+    setMarkers(prev => prev.map((m, j) => j === index ? { x: pctX, y: pctY, hex } : m));
+  };
+
+  const handleMarkerPointerUp = (e: React.PointerEvent, index: number) => {
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    if (!dragMovedRef.current) {
+      // Short tap without movement → remove the marker
+      setMarkers(prev => prev.filter((_, j) => j !== index));
+    }
+    setDraggingIndex(null);
+  };
+
+  const removeLastMarker = () => setMarkers(prev => prev.slice(0, -1));
+
+  const handleExport = () => {
+    const text = markers.map(m => `#${m.hex.toUpperCase()}`).join(', ');
+    navigator.clipboard.writeText(text).then(() => {
+      setExportCopied(true);
+      setTimeout(() => setExportCopied(false), 1500);
+    });
+  };
 
   return (
     <div>
-      {/* Drop zone */}
-      <div
-        className={`border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors mb-4 ${
-          dragging
-            ? 'border-[#374151] bg-[#F9FAFB]'
-            : 'border-[#D1D5DB] bg-white hover:border-[#374151] hover:bg-[#F9FAFB]'
-        }`}
-        style={{ minHeight: imgSrc ? undefined : '100px', padding: imgSrc ? '8px' : '20px' }}
-        onClick={() => {
-          const inp = document.createElement('input');
-          inp.type = 'file';
-          inp.accept = 'image/*';
-          inp.onchange = (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) processFile(file);
-          };
-          inp.click();
-        }}
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          const file = e.dataTransfer.files[0];
-          if (file) processFile(file);
-        }}
-      >
-        {imgSrc ? (
+      <canvas ref={canvasRef} className="hidden" />
+
+      {/* Image area */}
+      {imgSrc ? (
+        <div
+          ref={containerRef}
+          className={`relative rounded-lg overflow-hidden mb-3 select-none ${
+            draggingIndex !== null ? 'cursor-grabbing' :
+            markers.length < maxColors ? 'cursor-crosshair' : 'cursor-default'
+          }`}
+          style={{ aspectRatio: '16/9' }}
+          onClick={handleContainerClick}
+          onDragOver={(e) => { e.preventDefault(); setFileDragging(true); }}
+          onDragLeave={() => setFileDragging(false)}
+          onDrop={(e) => { e.preventDefault(); setFileDragging(false); const f = e.dataTransfer.files[0]; if (f) processFile(f); }}
+        >
           <img
             ref={imgRef}
             src={imgSrc}
-            alt="Preview"
-            className="max-h-32 rounded-lg object-contain"
+            alt="Color picker"
+            className="w-full h-full object-cover pointer-events-none"
+            draggable={false}
+            onLoad={handleImgLoad}
           />
-        ) : (
-          <>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-              <polyline points="17 8 12 3 7 8" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
-            <p className="text-xs font-semibold text-[#374151]">Upload an image</p>
-            <p className="text-[10px] text-[#9CA3AF]">to extract dominant colors</p>
-          </>
-        )}
-      </div>
-
-      {/* Extracted colors */}
-      {colors.length > 0 && (
-        <div>
-          <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Dominant colors</p>
-          <div className="grid grid-cols-2 gap-1.5">
-            {colors.map((c, i) => {
-              const ratio = contrastRatio({ text: `#${c.hex}`, background: `#${$background}` });
-              return (
-                <div key={i} className="flex items-center gap-1.5 p-1.5 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB]">
-                  <div
-                    className="w-6 h-6 rounded shrink-0 border border-[#E5E7EB]"
-                    style={{ backgroundColor: `#${c.hex}` }}
-                  />
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <span className="text-[10px] font-mono text-[#374151] truncate">#{c.hex.toUpperCase()}</span>
-                    <span className="text-[9px] text-[#9CA3AF]">{c.percent}%</span>
-                  </div>
-                  <span className={`text-[9px] font-bold px-1 py-0.5 rounded ${ratioBadgeClass(ratio)}`}>
-                    {ratio.toFixed(1)}
-                  </span>
-                  <button
-                    onClick={() => copy(`#${c.hex.toUpperCase()}`)}
-                    className="text-[#9CA3AF] hover:text-[#374151] transition-colors shrink-0"
-                  >
-                    {copied === `#${c.hex.toUpperCase()}` ? <CheckIcon /> : <CopyIcon />}
-                  </button>
-                </div>
-              );
-            })}
+          {markers.map((m, i) => (
+            <div
+              key={i}
+              className={`absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-[3px] border-white shadow-lg ${
+                draggingIndex === i
+                  ? 'scale-125 cursor-grabbing'
+                  : 'cursor-grab hover:scale-110'
+              }`}
+              style={{
+                left: `${m.x}%`, top: `${m.y}%`,
+                backgroundColor: `#${m.hex}`,
+                touchAction: 'none',
+                transition: draggingIndex === i ? 'none' : 'transform 0.1s',
+              }}
+              onPointerDown={(e) => handleMarkerPointerDown(e, i)}
+              onPointerMove={(e) => handleMarkerPointerMove(e, i)}
+              onPointerUp={(e) => handleMarkerPointerUp(e, i)}
+              title={`#${m.hex.toUpperCase()} · drag to reposition · tap to remove`}
+            />
+          ))}
+          <div className="absolute bottom-1.5 right-2 text-[9px] text-white/60 pointer-events-none">
+            {markers.length < maxColors ? 'click to pick · drag to reposition' : 'drag to reposition · tap to remove'}
           </div>
         </div>
+      ) : (
+        <div
+          className={`border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors mb-3 ${
+            fileDragging ? 'border-[#374151] bg-[#F9FAFB]' : 'border-[#D1D5DB] bg-white hover:border-[#374151] hover:bg-[#F9FAFB]'
+          }`}
+          style={{ height: '160px' }}
+          onClick={openFilePicker}
+          onDragOver={(e) => { e.preventDefault(); setFileDragging(true); }}
+          onDragLeave={() => setFileDragging(false)}
+          onDrop={(e) => { e.preventDefault(); setFileDragging(false); const f = e.dataTransfer.files[0]; if (f) processFile(f); }}
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+          <p className="text-xs font-semibold text-[#374151]">Browse image</p>
+          <p className="text-[10px] text-[#9CA3AF]">or drag & drop · click image to pick colors</p>
+        </div>
       )}
+
+      {/* Picked palettes slider */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-1.5">
+          <p className="text-xs font-bold text-[#374151] uppercase tracking-wider">Picked palettes</p>
+          <span className="text-[10px] text-[#9CA3AF] font-mono">{markers.length} / {maxColors}</span>
+        </div>
+        <input
+          type="range"
+          min={1}
+          max={8}
+          value={maxColors}
+          onChange={(e) => {
+            const v = +e.target.value;
+            setMaxColors(v);
+            if (markers.length > v) setMarkers(prev => prev.slice(0, v));
+          }}
+          className="w-full h-1.5 accent-[#374151] cursor-pointer"
+        />
+      </div>
+
+      {/* Palette strip */}
+      <div className="mb-3">
+        <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Palette</p>
+        <div className="flex items-center gap-2">
+          <div
+            className="flex rounded-lg overflow-hidden flex-1 border border-[#E5E7EB]"
+            style={{ height: '52px' }}
+          >
+            {markers.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center bg-[#F9FAFB]">
+                <span className="text-[10px] text-[#9CA3AF]">No colors picked yet</span>
+              </div>
+            ) : (
+              markers.map((m, i) => (
+                <div
+                  key={i}
+                  className="flex-1 relative group cursor-pointer"
+                  style={{ backgroundColor: `#${m.hex}` }}
+                  onClick={() => setMarkers(prev => prev.filter((_, j) => j !== i))}
+                  title={`#${m.hex.toUpperCase()} — click to remove`}
+                >
+                  {i === markers.length - 1 && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-white/70 shadow" />
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+          <div className="flex flex-col gap-1 shrink-0">
+            <button
+              onClick={() => setMaxColors(c => Math.min(8, c + 1))}
+              className="w-7 h-7 rounded border border-[#E5E7EB] text-[#374151] hover:bg-[#F3F4F6] flex items-center justify-center font-bold text-base leading-none transition-colors"
+            >
+              +
+            </button>
+            <button
+              onClick={() => { removeLastMarker(); setMaxColors(c => Math.max(1, c - 1)); }}
+              disabled={markers.length === 0 && maxColors === 1}
+              className="w-7 h-7 rounded border border-[#E5E7EB] text-[#374151] hover:bg-[#F3F4F6] flex items-center justify-center font-bold text-base leading-none transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              −
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Browse image */}
+      <button
+        onClick={openFilePicker}
+        className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] text-sm font-semibold text-[#374151] hover:bg-[#F3F4F6] transition-colors mb-2"
+      >
+        Browse image
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+      </button>
+
+      {/* Export palette */}
+      <button
+        onClick={handleExport}
+        disabled={markers.length === 0}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-[#1D4ED8] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        {exportCopied ? 'Copied!' : 'Export palette'}
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
     </div>
   );
 }
 
 // ─── Tab bar ────────────────────────────────────────────────────────────────
 
-type TabKey = 'paleta' | 'multi' | 'grad' | 'tipo' | 'img';
+type TabKey = 'paleta' | 'multi' | 'grad' | 'img';
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   {
@@ -685,15 +784,6 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
         <rect x="1" y="4" width="14" height="8" rx="2" />
         <line x1="5" y1="4" x2="5" y2="12" />
         <line x1="11" y1="4" x2="11" y2="12" />
-      </svg>
-    ),
-  },
-  {
-    key: 'tipo',
-    label: 'Type',
-    icon: (
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 4h12M6 4v8M10 4v8" />
       </svg>
     ),
   },
@@ -739,7 +829,6 @@ export function ToolsPanel() {
       {activeTab === 'paleta' && <TabPaleta />}
       {activeTab === 'multi' && <TabMulti />}
       {activeTab === 'grad' && <TabGrad />}
-      {activeTab === 'tipo' && <TabTipo />}
       {activeTab === 'img' && <TabImg />}
     </div>
   );
