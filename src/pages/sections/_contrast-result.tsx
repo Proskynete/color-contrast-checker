@@ -4,20 +4,30 @@ import { useState } from "react";
 import { getContrastResults } from "../../helpers/contrast.helper";
 import { backgroundStore, textStore } from "../../store/values.store";
 
-function getBadgeStyle(value: string) {
-  if (value === "AAA" || value === "AA") return "bg-green-100 text-green-700";
-  return "bg-red-100 text-red-600";
+const SIZES = [12, 14, 16, 18, 24, 32];
+
+type SizeStatus = 'fail' | 'acceptable' | 'optimal';
+
+function getSizeStatus(px: number, ratio: number): SizeStatus {
+  if (px < 18) {
+    if (ratio >= 7) return 'optimal';
+    if (ratio >= 4.5) return 'acceptable';
+    return 'fail';
+  }
+  if (px < 24) {
+    if (ratio >= 4.5) return 'optimal';
+    if (ratio >= 3.0) return 'acceptable';
+    return 'fail';
+  }
+  if (ratio >= 3.0) return 'optimal';
+  return 'fail';
 }
 
-function getBadgeLabel(value: string) {
-  if (value === "AAA") return "AAA";
-  if (value === "AA") return "AA";
-  return "Fail";
-}
-
-function isPass(value: string) {
-  return value === "AA" || value === "AAA";
-}
+const STATUS_CONFIG: Record<SizeStatus, { dot: string; label: string; text: string }> = {
+  fail: { dot: 'bg-red-500', label: 'Fail', text: 'text-red-600' },
+  acceptable: { dot: 'bg-yellow-400', label: 'Acceptable', text: 'text-yellow-600' },
+  optimal: { dot: 'bg-green-500', label: 'Optimal', text: 'text-green-600' },
+};
 
 type Props = {
   isSignedIn: boolean;
@@ -28,7 +38,7 @@ export const ContrastResult = ({ isSignedIn }: Props) => {
   const $text = useStore(textStore);
   const [shareState, setShareState] = useState<'idle' | 'loading' | 'copied'>('idle');
 
-  const { ratio, levels, classification } = getContrastResults({
+  const { ratio, classification } = getContrastResults({
     text: `#${$text}`,
     background: `#${$background}`,
   });
@@ -70,11 +80,10 @@ export const ContrastResult = ({ isSignedIn }: Props) => {
   const ratioBg = failing ? "#FFF5F5" : "#F0FFF4";
   const ratioTextColor = failing ? "#DC2626" : "#16A34A";
 
-  const uiLevel = ratio >= 3 ? "AA" : "A";
-  const allLevels = [
-    ...levels,
-    { title: "UI Components", value: uiLevel },
-  ];
+  const sizes = SIZES.map(px => ({ px, status: getSizeStatus(px, ratio) }));
+  const optimal = sizes.filter(s => s.status === 'optimal');
+  const recommended = optimal.length > 0 ? optimal[optimal.length - 1] : sizes.find(s => s.status === 'acceptable');
+  const minPassing = sizes.find(s => s.status !== 'fail');
 
   return (
     <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
@@ -120,42 +129,51 @@ export const ContrastResult = ({ isSignedIn }: Props) => {
         </p>
       </div>
 
-      {/* Level rows */}
-      <div className="flex flex-col gap-2 mb-4">
-        {allLevels.map((level) => (
-          <div
-            key={level.title}
-            className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F9FAFB] border border-[#F3F4F6]"
-          >
-            <div className="flex items-center gap-2.5">
-              {isPass(level.value) ? (
-                <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <path d="M2 5l2.5 2.5 3.5-4" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <path d="M3 3l4 4M7 3l-4 4" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              )}
-              <span className="text-sm font-medium text-[#374151]">{level.title}</span>
+      {/* Recommended size */}
+      {recommended ? (
+        <div className="bg-[#F0FDF4] border border-green-200 rounded-lg px-3 py-2 mb-3 flex items-center justify-between">
+          <span className="text-xs font-bold text-green-700">{recommended.px}px recommended</span>
+          <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded font-semibold">optimal</span>
+        </div>
+      ) : (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3">
+          <span className="text-xs font-bold text-red-700">No size passes with this contrast ratio</span>
+        </div>
+      )}
+
+      <p className="text-[10px] text-[#9CA3AF] mb-3 leading-relaxed">
+        Only valid for large text (18px+ or 14px bold).{' '}
+        {minPassing ? `Minimum passing size: ${minPassing.px}px` : 'None pass at this ratio.'}
+      </p>
+
+      {/* Size previews */}
+      <div className="flex flex-col gap-3 mb-4">
+        {sizes.map(({ px, status }) => {
+          const cfg = STATUS_CONFIG[status];
+          return (
+            <div key={px} className="flex items-baseline gap-2">
+              <div className="flex items-center gap-1.5 w-24 shrink-0">
+                <div className={`w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
+                <span className={`text-[10px] font-semibold ${cfg.text}`}>{cfg.label}</span>
+              </div>
+              <span
+                className="leading-tight truncate flex-1"
+                style={{ fontSize: `${px}px`, color: `#${$text}`, lineHeight: 1.2 }}
+              >
+                Sample text
+              </span>
+              <span className="text-[10px] text-[#9CA3AF] shrink-0">{px}px</span>
             </div>
-            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${getBadgeStyle(level.value)}`}>
-              {getBadgeLabel(level.value)}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* WCAG requirements */}
       <div className="pt-3 border-t border-[#F3F4F6]">
         <p className="text-xs font-semibold text-[#6B7280] mb-1.5">WCAG Requirements:</p>
         <ul className="text-xs text-[#9CA3AF] space-y-0.5">
-          <li>• AA normal text: 4.5:1</li>
-          <li>• AA large text: 3:1</li>
+          <li>• AA normal text (&lt;18px): 4.5:1</li>
+          <li>• AA large text (≥18px or 14px bold): 3:1</li>
           <li>• AAA normal text: 7:1</li>
           <li>• AAA large text: 4.5:1</li>
         </ul>
