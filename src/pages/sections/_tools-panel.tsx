@@ -7,6 +7,7 @@ import {
   lerpColor,
   type PaletteType,
   parseColorInput,
+  randomPaletteColor,
   rgbToHex,
 } from '../../utils/color-convert.util';
 import { contrastRatio } from '../../utils/contrast.util';
@@ -62,18 +63,46 @@ const HARMONY_TYPES: { key: PaletteType; label: string }[] = [
   { key: 'monocromatico', label: 'Monochromatic' },
 ];
 
+function ShuffleIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 4h2a4 4 0 014 4 4 4 0 004 4h2M11 2l3 2-3 2M11 10l3 2-3 2M1 12h2a4 4 0 003.4-1.9" />
+    </svg>
+  );
+}
+
 function TabPaleta() {
-  const $text = useStore(textStore);
-  const $background = useStore(backgroundStore);
+  const [baseHex, setBaseHex] = useState<string>(() => randomPaletteColor());
   const [harmonyType, setHarmonyType] = useState<PaletteType>('complementarios');
+  const [count, setCount] = useState<3 | 4 | 5>(3);
   const [tooltip, setTooltip] = useState<{ hex: string; x: number; y: number } | null>(null);
   const { copied, copy } = useCopy();
 
-  const baseHex = $text.length === 6 ? $text : '374151';
-  const palette = generatePalette(baseHex, harmonyType);
+  const allColors = generatePalette(baseHex, harmonyType); // always 5
+  const palette = allColors.slice(0, count);
 
   return (
     <div>
+      {/* Base color + shuffle */}
+      <div className="flex items-center gap-2 mb-4">
+        <div
+          className="w-8 h-8 rounded-lg border border-[#E5E7EB] shrink-0"
+          style={{ backgroundColor: `#${baseHex}` }}
+        />
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-[10px] text-[#9CA3AF] uppercase tracking-wider leading-none mb-0.5">Base color</span>
+          <span className="text-xs font-mono text-[#374151] font-semibold">#{baseHex.toUpperCase()}</span>
+        </div>
+        <button
+          onClick={() => setBaseHex(randomPaletteColor())}
+          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#E5E7EB] text-[#6B7280] hover:border-[#374151] hover:text-[#374151] transition-colors shrink-0"
+          title="Generate new random color"
+        >
+          <ShuffleIcon />
+          Shuffle
+        </button>
+      </div>
+
       {/* Harmony type buttons */}
       <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Harmony</p>
       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -92,20 +121,39 @@ function TabPaleta() {
         ))}
       </div>
 
+      {/* Count selector */}
+      <div className="flex items-center gap-2 mb-4">
+        <p className="text-xs font-bold text-[#374151] uppercase tracking-wider">Colors</p>
+        <div className="flex gap-1 ml-auto">
+          {([3, 4, 5] as const).map((n) => (
+            <button
+              key={n}
+              onClick={() => setCount(n)}
+              className={`w-7 h-7 text-xs rounded-md border font-semibold transition-colors ${
+                count === n
+                  ? 'border-[#374151] bg-[#374151] text-white'
+                  : 'border-[#E5E7EB] text-[#6B7280] hover:border-[#374151] hover:text-[#374151]'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Large horizontal swatches */}
       <div className="relative flex rounded-lg overflow-hidden mb-4" style={{ height: '80px' }}>
         {palette.map((hex, i) => (
           <div
             key={i}
-            className="flex-1 cursor-pointer transition-transform hover:scale-y-105 relative group"
+            className="flex-1 cursor-pointer transition-transform hover:scale-y-105"
             style={{ backgroundColor: `#${hex}` }}
-            onClick={() => textStore.set(hex)}
+            onClick={() => copy(`#${hex.toUpperCase()}`)}
             onMouseEnter={(e) => {
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
               setTooltip({ hex, x: rect.left + rect.width / 2, y: rect.top });
             }}
             onMouseLeave={() => setTooltip(null)}
-            title={`Click to use #${hex.toUpperCase()}`}
           />
         ))}
         {tooltip && (
@@ -113,40 +161,31 @@ function TabPaleta() {
             className="fixed z-50 pointer-events-none bg-[#111827] text-white text-xs px-2 py-1 rounded shadow-lg -translate-x-1/2 -translate-y-full -mt-1"
             style={{ left: tooltip.x, top: tooltip.y }}
           >
-            Click to use #{tooltip.hex.toUpperCase()}
+            #{tooltip.hex.toUpperCase()}
           </div>
         )}
       </div>
 
-      {/* Small swatches row with details */}
-      <p className="text-xs font-bold text-[#374151] uppercase tracking-wider mb-2">Colors</p>
+      {/* Color list */}
       <div className="flex flex-col gap-1.5">
-        {palette.map((hex, i) => {
-          const ratio = contrastRatio({ text: `#${hex}`, background: `#${$background}` });
-          const shortHex = `#${hex.slice(0, 5)}..`;
-          return (
-            <div key={i} className="flex items-center gap-2">
-              <div
-                className="w-7 h-7 rounded border border-[#E5E7EB] shrink-0 cursor-pointer hover:scale-110 transition-transform"
-                style={{ backgroundColor: `#${hex}` }}
-                onClick={() => textStore.set(hex)}
-              />
-              <span className="text-xs text-[#374151] font-mono w-16 truncate" title={`#${hex.toUpperCase()}`}>
-                {shortHex.toUpperCase()}
-              </span>
-              <button
-                onClick={() => copy(`#${hex.toUpperCase()}`)}
-                className="text-[#9CA3AF] hover:text-[#374151] transition-colors"
-                title="Copy hex"
-              >
-                {copied === `#${hex.toUpperCase()}` ? <CheckIcon /> : <CopyIcon />}
-              </button>
-              <span className={`ml-auto text-xs font-bold px-1.5 py-0.5 rounded ${ratioBadgeClass(ratio)}`}>
-                {ratioLabel(ratio)}
-              </span>
-            </div>
-          );
-        })}
+        {palette.map((hex, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <div
+              className="w-7 h-7 rounded border border-[#E5E7EB] shrink-0"
+              style={{ backgroundColor: `#${hex}` }}
+            />
+            <span className="text-xs text-[#374151] font-mono flex-1" title={`#${hex.toUpperCase()}`}>
+              #{hex.toUpperCase()}
+            </span>
+            <button
+              onClick={() => copy(`#${hex.toUpperCase()}`)}
+              className="text-[#9CA3AF] hover:text-[#374151] transition-colors"
+              title="Copy hex"
+            >
+              {copied === `#${hex.toUpperCase()}` ? <CheckIcon /> : <CopyIcon />}
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

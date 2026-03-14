@@ -61,22 +61,83 @@ export function hslToHex(h: number, s: number, l: number): string {
 
 export type PaletteType = 'complementarios' | 'analogos' | 'triadico' | 'complementarios-divididos' | 'tetradico' | 'monocromatico';
 
+/** Generates a random vivid color suitable as a palette seed. */
+export function randomPaletteColor(): string {
+  const h = Math.floor(Math.random() * 360);
+  const s = Math.floor(Math.random() * 35) + 55; // 55–90%
+  const l = Math.floor(Math.random() * 25) + 38; // 38–62%
+  return hslToHex(h, s, l);
+}
+
+/** Always returns exactly 5 colors for the given harmony type. */
 export function generatePalette(hex: string, type: PaletteType): string[] {
   const rgb = hexToRgb(hex);
-  if (!rgb) return [hex];
+  if (!rgb) return Array(5).fill(hex);
   const { h, s, l } = rgbToHsl(rgb.r, rgb.g, rgb.b);
-  if (type === 'complementarios') return [hex, hslToHex((h + 180) % 360, s, l)];
-  if (type === 'analogos') return [hslToHex((h - 30 + 360) % 360, s, l), hex, hslToHex((h + 30) % 360, s, l)];
-  if (type === 'triadico') return [hex, hslToHex((h + 120) % 360, s, l), hslToHex((h + 240) % 360, s, l)];
-  if (type === 'complementarios-divididos') return [hex, hslToHex((h + 150) % 360, s, l), hslToHex((h + 210) % 360, s, l)];
-  if (type === 'tetradico') return [hex, hslToHex((h + 90) % 360, s, l), hslToHex((h + 180) % 360, s, l), hslToHex((h + 270) % 360, s, l)];
+  const S = s < 10 ? 60 : s;
+
+  if (type === 'complementarios') {
+    const c = (h + 180) % 360;
+    return [
+      hex,
+      hslToHex(c, S, l),
+      hslToHex(h, S, Math.min(l + 18, 92)),
+      hslToHex(c, S, Math.min(l + 18, 92)),
+      hslToHex(h, S, Math.max(l - 18, 8)),
+    ];
+  }
+
+  if (type === 'analogos') {
+    return [
+      hslToHex((h - 30 + 360) % 360, S, l),
+      hslToHex((h - 15 + 360) % 360, S, l),
+      hex,
+      hslToHex((h + 15) % 360, S, l),
+      hslToHex((h + 30) % 360, S, l),
+    ];
+  }
+
+  if (type === 'triadico') {
+    const t1 = (h + 120) % 360;
+    const t2 = (h + 240) % 360;
+    return [
+      hex,
+      hslToHex(t1, S, l),
+      hslToHex(t2, S, l),
+      hslToHex(h, S, Math.min(l + 18, 92)),
+      hslToHex(t1, S, Math.max(l - 15, 8)),
+    ];
+  }
+
+  if (type === 'complementarios-divididos') {
+    const s1 = (h + 150) % 360;
+    const s2 = (h + 210) % 360;
+    return [
+      hex,
+      hslToHex(s1, S, l),
+      hslToHex(s2, S, l),
+      hslToHex(s1, S, Math.min(l + 18, 92)),
+      hslToHex(s2, S, Math.max(l - 15, 8)),
+    ];
+  }
+
+  if (type === 'tetradico') {
+    return [
+      hex,
+      hslToHex((h + 90) % 360, S, l),
+      hslToHex((h + 180) % 360, S, l),
+      hslToHex((h + 270) % 360, S, l),
+      hslToHex(h, S, Math.min(l + 18, 92)),
+    ];
+  }
+
   // monocromatico
   return [
-    hslToHex(h, s, Math.min(l + 40, 95)),
-    hslToHex(h, s, Math.min(l + 20, 95)),
+    hslToHex(h, S, Math.min(l + 40, 95)),
+    hslToHex(h, S, Math.min(l + 20, 95)),
     hex,
-    hslToHex(h, s, Math.max(l - 20, 5)),
-    hslToHex(h, s, Math.max(l - 40, 5)),
+    hslToHex(h, S, Math.max(l - 20, 5)),
+    hslToHex(h, S, Math.max(l - 40, 5)),
   ];
 }
 
