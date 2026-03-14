@@ -54,7 +54,12 @@ const isPass = (v: string) => v === 'AA' || v === 'AAA';
 const tryItUrl = `/?text=${textColor.replace('#', '')}&bg=${bgColor.replace('#', '')}`;
 ---
 
-<LandingLayout>
+<LandingLayout
+	title={notFound || expired ? 'Check not found — C3' : `Contrast ${textColor} / ${bgColor} — ${check.wcag_level} | C3`}
+	description={notFound || expired ? 'This shared contrast check is no longer available.' : `Contrast ratio ${ratio.toFixed(2)}:1 between ${textColor} and ${bgColor}. WCAG level: ${check.wcag_level}. Checked with C3 — Free WCAG Color Contrast Checker.`}
+	canonical={`https://c3.eduardoalvarez.dev/share/${token}`}
+	noindex={notFound || expired}
+>
 	<div class="max-w-md mx-auto py-4">
 
 		{notFound && (

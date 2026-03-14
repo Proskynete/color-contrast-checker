@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://c3.eduardoalvarez.dev/sitemap-index.xml

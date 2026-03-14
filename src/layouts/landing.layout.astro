@@ -1,6 +1,78 @@
 ---
 import Header from './components/header.astro';
 import Footer from './components/footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+}
+
+const SITE_URL = 'https://c3.eduardoalvarez.dev';
+const DEFAULT_TITLE = 'C3 — Free WCAG Color Contrast Checker with AI Suggestions';
+const DEFAULT_DESCRIPTION = 'Free WCAG color contrast checker with AI color correction, palette harmonies, daltonism simulation, image color picker, and shareable links. Verify AA/AAA compliance instantly.';
+const DEFAULT_OG_IMAGE = `${SITE_URL}/images/color-contrast-checker.webp`;
+
+const {
+  title = DEFAULT_TITLE,
+  description = DEFAULT_DESCRIPTION,
+  canonical = SITE_URL,
+  ogImage = DEFAULT_OG_IMAGE,
+  noindex = false,
+} = Astro.props;
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'C3 — Color Contrast Checker',
+  url: SITE_URL,
+  description: DEFAULT_DESCRIPTION,
+  applicationCategory: 'DesignApplication',
+  operatingSystem: 'Web',
+  browserRequirements: 'Requires JavaScript',
+  inLanguage: 'en',
+  author: {
+    '@type': 'Person',
+    name: 'Eduardo Álvarez Castañeda',
+    url: SITE_URL,
+  },
+  offers: [
+    {
+      '@type': 'Offer',
+      name: 'Free',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Pro',
+      price: '9',
+      priceCurrency: 'USD',
+      billingIncrement: 'P1M',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Teams',
+      price: '29',
+      priceCurrency: 'USD',
+      billingIncrement: 'P1M',
+    },
+  ],
+  featureList: [
+    'WCAG AA/AAA contrast ratio checker',
+    'AI color correction suggestions',
+    'Color palette harmony generator',
+    'Daltonism (color blindness) simulation',
+    'Image color picker',
+    'Shareable check URLs',
+    'Bulk CSV contrast checker',
+    'AI palette generator',
+    'Check history',
+    'Team collaboration',
+  ],
+});
 ---
 
 <html lang="en">
@@ -10,25 +82,40 @@ import Footer from './components/footer.astro';
 		<meta http-equiv="x-ua-compatible" content="ie=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<link rel="canonical" href="https://c3.eduardoalvarez.dev" />
-		<meta name="title" content="C3 — Color Contrast Checker" />
-		<meta name="description" content="Check the contrast ratio between text and background colors and verify WCAG AA/AAA accessibility compliance." />
+		<link rel="canonical" href={canonical} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+		<!-- Primary meta -->
+		<meta name="title" content={title} />
+		<meta name="description" content={description} />
 		<meta name="author" content="Eduardo Álvarez Castañeda" />
 		<meta name="application-name" content="C3 Color Contrast Checker" />
 
-		<meta property="og:url" content="https://c3.eduardoalvarez.dev" />
-		<meta property="og:title" content="C3 — Color Contrast Checker" />
-		<meta property="og:description" content="Check the contrast ratio between text and background colors and verify WCAG AA/AAA accessibility compliance." />
-		<meta property="og:image" content="/images/color-contrast-checker.webp" />
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="C3 Color Contrast Checker" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="C3 — Color Contrast Checker interface showing WCAG compliance results, AI suggestions, and palette tools" />
+		<meta property="og:locale" content="en_US" />
 
-		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content="https://c3.eduardoalvarez.dev" />
-		<meta property="twitter:title" content="C3 — Color Contrast Checker" />
-		<meta property="twitter:description" content="Check the contrast ratio between text and background colors and verify WCAG AA/AAA accessibility compliance." />
-		<meta property="twitter:image" content="/images/color-contrast-checker.webp" />
+		<!-- Twitter / X -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonical} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image:alt" content="C3 — Color Contrast Checker" />
 
 		<meta name="generator" content={Astro.generator} />
-		<title>C3 — Color Contrast Checker</title>
+		<title>{title}</title>
+
+		<!-- JSON-LD structured data -->
+		<script type="application/ld+json" set:html={jsonLd} />
 
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
