@@ -52,6 +52,10 @@ const uiLevel = ratio >= 3 ? 'AA' : 'Fail';
 const isPass = (v: string) => v === 'AA' || v === 'AAA';
 
 const tryItUrl = `/?text=${textColor.replace('#', '')}&bg=${bgColor.replace('#', '')}`;
+
+const ogImage = !notFound && !expired
+  ? `https://c3.eduardoalvarez.dev/og.png?text=${textColor.replace('#', '')}&bg=${bgColor.replace('#', '')}&ratio=${ratio.toFixed(2)}&level=${check.wcag_level}`
+  : undefined;
 ---
 
 <LandingLayout
@@ -59,6 +63,7 @@ const tryItUrl = `/?text=${textColor.replace('#', '')}&bg=${bgColor.replace('#',
 	description={notFound || expired ? 'This shared contrast check is no longer available.' : `Contrast ratio ${ratio.toFixed(2)}:1 between ${textColor} and ${bgColor}. WCAG level: ${check.wcag_level}. Checked with C3 — Free WCAG Color Contrast Checker.`}
 	canonical={`https://c3.eduardoalvarez.dev/share/${token}`}
 	noindex={notFound || expired}
+	ogImage={ogImage}
 >
 	<div class="max-w-md mx-auto py-4">
 
